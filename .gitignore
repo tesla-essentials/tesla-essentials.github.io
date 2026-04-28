@@ -1,0 +1,9 @@
+.DS_Store
+.wrangler/
+working/
+node_modules/
+*.log
+.env
+.env.local
+# claude-mem auto-generated session context
+CLAUDE.md
