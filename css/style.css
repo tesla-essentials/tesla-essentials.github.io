@@ -100,8 +100,6 @@ body {
   line-height: 1.6;
   color: var(--ink);
   background: var(--bg);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
@@ -389,17 +387,15 @@ p {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: var(--bg);
   border-bottom: 1px solid var(--edge);
   padding-top: env(safe-area-inset-top, 0px);
-  transition: box-shadow 250ms var(--ease), background 250ms var(--ease);
+  transition: box-shadow 250ms var(--ease);
 }
 
 @media (prefers-color-scheme: dark) {
   .category-nav {
-    background: rgba(0, 0, 0, 0.88);
+    background: var(--bg);
   }
 }
 
@@ -428,18 +424,16 @@ p {
 .nav-pill {
   flex-shrink: 0;
   font-family: var(--font-display);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
-  letter-spacing: 0;
+  letter-spacing: 0.005em;
   color: var(--ink-soft);
-  padding: 9px 16px;
+  padding: 9px 18px;
   border-radius: var(--r-pill);
   white-space: nowrap;
   position: relative;
   transition: color 180ms var(--ease), background 180ms var(--ease);
   -webkit-tap-highlight-color: transparent;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 .nav-pill:hover {
