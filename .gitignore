@@ -7,3 +7,5 @@ node_modules/
 .env.local
 # claude-mem auto-generated session context
 CLAUDE.md
+# Claude Code harness runtime files
+.claude/
