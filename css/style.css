@@ -340,6 +340,49 @@ p {
 }
 
 /* ============================================================
+   OWNER BAR
+   ============================================================ */
+.owner-bar {
+  background: var(--bg);
+  border-bottom: 1px solid var(--edge);
+}
+
+.owner-bar__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 14px 24px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.owner-bar a {
+  color: var(--ink);
+  font-weight: 600;
+  border-bottom: 1px solid var(--edge-strong);
+  padding-bottom: 1px;
+  transition: color 160ms var(--ease), border-color 160ms var(--ease);
+}
+
+.owner-bar a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.owner-bar a span {
+  color: inherit;
+}
+
+@media (max-width: 639px) {
+  .owner-bar__inner {
+    padding: 12px 20px;
+    font-size: 0.78rem;
+    text-align: left;
+  }
+}
+
+/* ============================================================
    STICKY CATEGORY NAV
    ============================================================ */
 .category-nav {
