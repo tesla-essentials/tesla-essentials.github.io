@@ -45,10 +45,11 @@
     <priority>0.7</priority>
   </url>
 
-  <!-- Future guides (placeholder for when content is added) -->
-  <!-- <url>
-    <loc>https://tesla-essentials.com/guides/model-3-essentials.html</loc>
+  <!-- Guides -->
+  <url>
+    <loc>https://tesla-essentials.com/guides/model-y-essentials.html</loc>
+    <lastmod>2026-05-28</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url> -->
+    <priority>0.65</priority>
+  </url>
 </urlset>
