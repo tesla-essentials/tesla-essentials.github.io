@@ -5,6 +5,7 @@ node_modules/
 *.log
 .env
 .env.local
-# claude-mem auto-generated session context (catch everywhere)
-**/*CLAUDE.md
+# claude-mem auto-generated session context (root CLAUDE.md stays tracked if added)
+**/CLAUDE.md
+!/CLAUDE.md
 .claude/
