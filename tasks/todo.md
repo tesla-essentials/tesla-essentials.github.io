@@ -25,7 +25,7 @@
 | Project Tracking | In Progress | Basic `tasks/todo.md` + `lessons.md` created. Needs ongoing maintenance. |
 | Image Workflow | Ad-hoc | Still no shared optimization script. **High priority** to introduce now while the image library is still small and manageable. |
 | Accessibility | Unknown | No evidence of the hardened focus styles or focus trapping from the sister site. |
-| Guides | Empty | `/guides/` directory is completely empty. PLAN.md explicitly calls for buying guides (e.g. Model 3 Essentials, Model Y Essentials). Growing gap. |
+| Guides | Dropped | Guides removed entirely per user feedback. May revisit with a different format later.
 | Voting / Social Proof | Not implemented | No product voting or click tracking system yet (unlike cyberoffroading). Decision needed. |
 | Cache Busting | Manual | CSS still uses `?v=6`. Same maintenance friction. |
 | SEO | Improving | sitemap.xml added recently, but currently only lists the homepage. Opportunity to expand it. |
@@ -50,8 +50,9 @@
 - [ ] Full a11y audit (especially once more interactive features are added).
 
 ### Phase 3 — Content Gaps
-- [x] Seeded `/guides/` directory with README and structure.
-- [ ] Create actual buying guide content (high value, currently the biggest gap vs PLAN.md).
+- [x] Guides fully removed per user feedback (current format was not useful).
+- [x] Removed top Amazon affiliate disclosure banner (footer version retained).
+- [ ] Re-evaluate long-form content strategy in the future if desired.
 
 ### Phase 4 — Long-term
 - [x] Clear decision recorded on voting system (see Phase 1).

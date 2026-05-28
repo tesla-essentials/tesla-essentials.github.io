@@ -20,7 +20,7 @@ Tesla-Essentials.com is a single-page affiliate content site focused on essentia
 │   └── products/<slug>/       # Product photos (kept reasonably optimized)
 ├── scripts/
 │   └── optimize-images.sh     # Optional helper for new photos
-├── guides/                    # (Planned) Long-form buying guides
+├── guides/                    # (Currently removed / on hold)
 ├── 404.html
 ├── sitemap.xml
 ├── robots.txt
@@ -65,7 +65,7 @@ See `CLAUDE.md` → "Adding Products" and the image workflow section.
 ## Future / Planned
 
 - Expansion of Model S, Model X, and more Cybertruck overlap
-- Buying guides in `/guides/`
+- Long-form guides currently on hold (initial versions removed)
 - Potential addition of voting/click tracking (decision pending)
 
 ## Reference

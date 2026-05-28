@@ -1197,3 +1197,75 @@ a.nav-pill:focus-visible,
   outline: none;
   box-shadow: 0 0 0 2px var(--accent);
 }
+
+/* ============================================================
+   STANDALONE GUIDES
+   ============================================================ */
+.guide-page {
+  background: var(--bg);
+  color: var(--ink);
+  padding: 0;
+  min-height: 100vh;
+}
+
+.guide-back {
+  display: inline-block;
+  margin: 24px 0 16px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.guide-back:hover {
+  color: var(--accent);
+}
+
+.guide-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+.guide-content h1 {
+  font-size: 2.2rem;
+  margin-bottom: 16px;
+  line-height: 1.15;
+}
+
+.guide-content h2 {
+  margin-top: 48px;
+  margin-bottom: 12px;
+  font-size: 1.35rem;
+}
+
+.guide-content p,
+.guide-content li {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+
+.guide-content ul {
+  padding-left: 20px;
+}
+
+.guide-content li {
+  margin-bottom: 8px;
+}
+
+.guide-footer-note {
+  margin-top: 48px;
+  font-size: 0.9rem;
+  color: var(--ink-mute);
+  border-top: 1px solid var(--edge);
+  padding-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .guide-content {
+    padding: 0 16px 60px;
+  }
+  .guide-content h1 {
+    font-size: 1.85rem;
+  }
+}
