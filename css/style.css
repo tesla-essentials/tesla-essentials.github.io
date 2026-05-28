@@ -1181,3 +1181,19 @@ a.nav-pill:focus-visible,
   white-space: nowrap;
   border: 0;
 }
+
+/* ============================================================
+   FOCUS STYLES (keyboard accessibility)
+   Adapted from sister site with this project's softer aesthetic.
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* For elements where outline would look out of place with the design */
+.cta-button:focus-visible,
+.nav-pill:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}

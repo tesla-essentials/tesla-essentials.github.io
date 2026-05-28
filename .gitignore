@@ -5,7 +5,6 @@ node_modules/
 *.log
 .env
 .env.local
-# claude-mem auto-generated session context
-CLAUDE.md
-# Claude Code harness runtime files
+# claude-mem auto-generated session context (catch everywhere)
+**/*CLAUDE.md
 .claude/

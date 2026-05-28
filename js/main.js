@@ -13,6 +13,43 @@
 
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Simple focus trap helper (prepared for future modals/lightboxes)
+  function trapFocus(container, onEscape) {
+    var focusable = container.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+    if (!focusable.length) return null;
+
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    var previousFocus = document.activeElement;
+
+    function handleKey(e) {
+      if (e.key === 'Tab') {
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            last.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === last) {
+            first.focus();
+            e.preventDefault();
+          }
+        }
+      }
+      if (e.key === 'Escape' && onEscape) {
+        onEscape();
+      }
+    }
+
+    container.addEventListener('keydown', handleKey);
+    setTimeout(function() { first.focus(); }, 10);
+
+    return function release() {
+      container.removeEventListener('keydown', handleKey);
+      if (previousFocus && previousFocus.focus) previousFocus.focus();
+    };
+  }
+
   /* ----------------------------------------------------------
      1. Footer year
      ---------------------------------------------------------- */
