@@ -18,6 +18,11 @@
 #
 set -euo pipefail
 
+command -v magick >/dev/null 2>&1 || {
+  echo "Error: ImageMagick ('magick') not found. Install with: brew install imagemagick"
+  exit 1
+}
+
 if [ $# -eq 0 ]; then
   echo "Usage: $0 <image1.jpg> [image2.jpg ...]"
   exit 1
@@ -52,9 +57,13 @@ for input in "$@"; do
     -quality "$JPEG_QUALITY" \
     "$large_jpeg"
 
-  cwebp -q "$WEBP_QUALITY" -mt -af "$input" -resize "$LARGE_WIDTH" 0 -o "$large_webp" 2>/dev/null || {
-    magick "$input" -resize "${LARGE_WIDTH}x>" -quality "$WEBP_QUALITY" "$large_webp"
-  }
+  # Note: cwebp's -resize upscales smaller sources (no shrink-only mode), so use
+  # magick's "Wx>" geometry for WebP as well.
+  magick "$input" \
+    -resize "${LARGE_WIDTH}x>" \
+    -strip \
+    -quality "$WEBP_QUALITY" \
+    "$large_webp"
 
   echo "   Created:"
   echo "     $(du -h "$large_webp" | cut -f1)  $large_webp"

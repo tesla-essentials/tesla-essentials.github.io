@@ -16,7 +16,7 @@
   /* Ink */
   --ink:             #0a0a0a;
   --ink-soft:        #4a4a4f;
-  --ink-mute:        #8a8a90;
+  --ink-mute:        #707076; /* ≥4.5:1 on white — small-text AA */
   --ink-faint:       #b8b8be;
 
   /* Edges */
@@ -300,8 +300,47 @@ p {
   animation: heroIn 1s 0.3s var(--ease-out) both;
 }
 
-.hero .cta-button {
+.hero__models {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   animation: heroIn 1s 0.45s var(--ease-out) both;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--bg-elevated);
+  border: 1px solid var(--edge-strong);
+  border-radius: var(--r-pill);
+  padding: 11px 20px;
+  box-shadow: var(--shadow-sm);
+  transition:
+    color 180ms var(--ease),
+    border-color 180ms var(--ease),
+    transform 200ms var(--ease-out),
+    box-shadow 250ms var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hero-pill span {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink-mute);
+}
+
+.hero-pill:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 @keyframes heroIn {
@@ -312,29 +351,6 @@ p {
 @keyframes heroEyebrow {
   from { opacity: 0; transform: translateY(-10px); }
   to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ============================================================
-   FTC BANNER
-   ============================================================ */
-.ftc-banner {
-  background: var(--bg-soft);
-  border-bottom: 1px solid var(--edge);
-}
-
-.ftc-banner__inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 14px 24px;
-  font-size: 0.78rem;
-  line-height: 1.5;
-  color: var(--ink-mute);
-  text-align: center;
-}
-
-.ftc-banner__inner strong {
-  color: var(--ink-soft);
-  font-weight: 600;
 }
 
 /* ============================================================
@@ -393,12 +409,6 @@ p {
   transition: box-shadow 250ms var(--ease);
 }
 
-@media (prefers-color-scheme: dark) {
-  .category-nav {
-    background: var(--bg);
-  }
-}
-
 .category-nav.is-stuck {
   box-shadow: var(--shadow-sm);
 }
@@ -445,13 +455,6 @@ p {
   color: var(--bg);
   background: var(--ink);
   font-weight: 600;
-}
-
-@media (prefers-color-scheme: dark) {
-  .nav-pill.active {
-    color: var(--bg);
-    background: var(--ink);
-  }
 }
 
 /* External nav pill — visually distinct (Cybertruck cross-link) */
@@ -695,6 +698,30 @@ p {
   letter-spacing: -0.01em;
 }
 
+/* Per-card fitment confirmation — the "is this MY car?" answer at the decision point */
+.product-card__fits {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  background: var(--bg-panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-sm);
+  padding: 7px 10px;
+}
+
+.product-card__fits-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  flex-shrink: 0;
+}
+
 /* ============================================================
    CTA BUTTON
    ============================================================ */
@@ -740,11 +767,6 @@ p {
 
 .cta-button:active {
   transform: scale(0.98);
-}
-
-.cta-button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
 }
 
 /* In-card CTA — full-width, slightly less prominent */
@@ -925,10 +947,12 @@ p {
   box-shadow: var(--shadow-md);
   z-index: 60;
   opacity: 0;
+  visibility: hidden; /* also removes it from the keyboard tab order while hidden */
   transform: translateY(8px) scale(0.95);
   pointer-events: none;
   transition:
     opacity 220ms var(--ease),
+    visibility 220ms var(--ease),
     transform 220ms var(--ease),
     color 180ms var(--ease),
     border-color 180ms var(--ease);
@@ -936,6 +960,7 @@ p {
 
 .back-to-top.visible {
   opacity: 1;
+  visibility: visible;
   transform: translateY(0) scale(1);
   pointer-events: auto;
 }
@@ -1020,7 +1045,7 @@ p {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.06em;
-  color: var(--ink-faint);
+  color: var(--ink-mute);
   padding-top: 20px;
   border-top: 1px solid var(--edge);
 }
@@ -1038,8 +1063,7 @@ p {
 @media (min-width: 768px) {
   .container,
   .section__header,
-  .product-grid,
-  .ftc-banner__inner {
+  .product-grid {
     padding-left: 40px;
     padding-right: 40px;
   }
@@ -1124,9 +1148,9 @@ p {
   .product-grid { padding: 0 20px; gap: 16px; }
   .product-grid:empty { margin: 0 20px; }
 
-  .ftc-banner__inner { padding: 12px 20px; font-size: 0.74rem; }
-
   .nav-pill { padding: 9px 14px; font-size: 0.8rem; }
+
+  .hero-pill { padding: 10px 16px; font-size: 0.85rem; }
 
   .site-footer { padding: 64px 20px 32px; }
   .back-to-top { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
@@ -1139,9 +1163,6 @@ p {
   .category-nav {
     background: var(--bg);
   }
-  @media (prefers-color-scheme: dark) {
-    .category-nav { background: var(--bg); }
-  }
   .hero__eyebrow { backdrop-filter: none; }
 }
 
@@ -1153,18 +1174,6 @@ p {
     scroll-behavior: auto !important;
   }
   .product-card { opacity: 1; transform: none; }
-}
-
-/* Focus styles — visible without being ugly */
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: var(--r-sm);
-}
-
-a.nav-pill:focus-visible,
-.cta-button:focus-visible {
-  outline-offset: 3px;
 }
 
 /* ============================================================

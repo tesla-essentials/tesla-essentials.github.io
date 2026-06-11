@@ -26,6 +26,27 @@ This site deliberately uses a softer, light-mode-first aesthetic with rounded co
 
 ---
 
+## 2026-06 — Production Polish Review
+
+**A documented workflow that was never executed is a silent gap.**
+CLAUDE.md described the WebP/srcset image workflow for weeks, but zero WebP files
+existed and zero `<img>` tags used it. Audits should verify documented workflows
+were actually run, not just that the script exists.
+
+**Rule**: When a doc says "we do X", grep for evidence X has ever been done.
+
+**`cwebp -resize W 0` upscales smaller sources** — it has no shrink-only mode,
+unlike ImageMagick's `"Wx>"` geometry. The optimizer script silently upscaled
+1100px photos to 1600px WebP. Use magick for both outputs.
+
+**Schema.org Product markup without `offers` is worse than no markup.**
+Google requires offers/review/aggregateRating; affiliate sites with rotating
+Amazon prices can't honestly supply them. Plain HTML beats invalid structured data.
+
+**Subagent findings need verification before acting.** One review agent reported a
+"stuck active nav pill" bug, but reading `main.js` showed `setActive()` clears all
+pills before bailing — no bug. Verify each agent claim against the code before fixing.
+
 ## Future Entries
 
 (Add new lessons here as work progresses on this repo)

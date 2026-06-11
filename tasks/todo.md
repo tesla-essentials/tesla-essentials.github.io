@@ -66,6 +66,39 @@
 
 ---
 
+## 2026-06-10 — Full Review + Production Polish Push
+
+Three parallel review agents (code quality, SEO/infra, UX) audited the site; all
+verified findings were fixed in one pass. Goal: polished production site that
+can be found and makes money.
+
+### Shipped
+- [x] **Image pipeline executed** — WebP + JPEG `-1600` variants for all 28 photos + hero; all 40 cards and hero converted to `<picture>`. Hero LCP: 240 KB JPEG → 53 KB WebP. Fixed `cwebp -resize` upscaling bug in `optimize-images.sh` (now magick-only, shrink-only) + added dependency check.
+- [x] **Per-card fitment chips** — every card now states the exact years/trims it fits (`product-card__fits`), the #1 conversion/return-rate lever in this niche.
+- [x] **Year-anchored labels** — "New/Previous Model Y" → "Model Y (2026+)" / "Model Y (2020–25)" across nav, h2s, footer, JSON-LD. Self-documenting, ages gracefully.
+- [x] **Hero model picker** — replaced the single "Browse by model" CTA (which dumped everyone into New Model Y) with 6 model/year pills.
+- [x] **Removed invalid Product microdata** — no `offers` meant guaranteed Search Console errors and zero rich-result value with rotating Amazon prices.
+- [x] **Real favicons** — favicon.ico (16/32/48) + apple-touch-icon.png (geometric "T" on Tesla red); were 404ing on every page load.
+- [x] **404.html fixed** — undefined `--ink-secondary` → `--ink-soft`, Inter → Manrope fonts, added `?v=7` cache-buster.
+- [x] **SEO meta** — og:image dimensions corrected (2400×1350), sitemap trimmed to root URL (fragments are ignored by crawlers), lastmod updated.
+- [x] **A11y/contrast** — light-mode `--ink-mute` darkened to #707076 (≥4.5:1 AA), copyright bumped from `--ink-faint`, back-to-top now `visibility:hidden` when invisible (removed from tab order).
+- [x] **1975 Creations CTA** — added `nofollow sponsored` to match other monetized links.
+- [x] **Dead CSS removed** — `.ftc-banner` block + media-query refs, no-op dark-mode overrides, duplicate `:focus-visible` blocks consolidated.
+- [x] **Renamed** `door-liner-prev-m3` → `door-liner-new-m3` (image shows a Highland; slug was a copy-paste trap).
+- [x] **Scroll offset consistency** — JS click handler now matches CSS `scroll-padding-top` (+16px).
+- [x] Docs updated: CLAUDE.md (Adding Products), ARCHITECTURE.md (cards, labels, image workflow).
+
+### Remaining backlog (next sessions)
+- [ ] **Commit + deploy** — all of the above is uncommitted; root CLAUDE.md was also never `git add`ed (it is NOT gitignored — the `!/CLAUDE.md` negation works).
+- [ ] **Price bands / social proof on cards** — `.product-card__price` style exists; needs manually maintained approximate prices ("~$45") or rating snapshots. Highest-ROI card-content change left.
+- [ ] Decide fate of orphaned `images/products/screen-15-anti/photo.jpg` — add a 15″ anti-glare card (needs an amzn.to link) or delete the asset.
+- [ ] Normalize the one raw `amazon.com/dp/...?tag=` link (Model S sunshade) to `amzn.to` for consistency.
+- [ ] Mobile nav scroll affordance — pills overflow with a fade mask; consider a chevron hint.
+- [ ] Lighthouse run on the live domain after deploy; submit sitemap in Search Console.
+- [ ] Re-evaluate long-form content strategy (guides removed; format TBD).
+
+---
+
 **Status**: Major "all of it" execution push completed on 2026-05-28.
 
 Completed in this push:

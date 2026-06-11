@@ -16,8 +16,8 @@
   <meta property="og:title" content="Tesla Essentials — Best Accessories for Model 3, Y, S, X &amp; Cybertruck">
   <meta property="og:description" content="The essential accessories for every Tesla. Floor mats, sunshades, screen protectors, jack pads — handpicked by a 7-year Tesla owner.">
   <meta property="og:image" content="https://tesla-essentials.com/images/hero/hero.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:image:width" content="2400">
+  <meta property="og:image:height" content="1350">
   <meta property="og:site_name" content="Tesla Essentials">
 
   <!-- Twitter Card -->
@@ -26,7 +26,7 @@
   <meta name="twitter:description" content="Floor mats, sunshades, screen protectors, jack pads — curated by a 7-year Tesla owner.">
   <meta name="twitter:image" content="https://tesla-essentials.com/images/hero/hero.jpg">
 
-  <!-- Favicon (placeholder — replace with real icons) -->
+  <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
@@ -36,10 +36,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/style.css?v=7">
 
   <!-- Preload LCP image -->
-  <link rel="preload" as="image" href="images/hero/hero.jpg" fetchpriority="high">
+  <link rel="preload" as="image" href="images/hero/hero-1600.webp" type="image/webp" fetchpriority="high">
 
   <!-- JSON-LD: WebSite -->
   <script type="application/ld+json">
@@ -78,10 +78,10 @@
     "@type": "ItemList",
     "name": "Tesla accessories by model",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "New Model Y accessories", "url": "https://tesla-essentials.com/#new-model-y" },
-      { "@type": "ListItem", "position": 2, "name": "New Model 3 accessories", "url": "https://tesla-essentials.com/#new-model-3" },
-      { "@type": "ListItem", "position": 3, "name": "Previous Model Y accessories", "url": "https://tesla-essentials.com/#previous-model-y" },
-      { "@type": "ListItem", "position": 4, "name": "Previous Model 3 accessories", "url": "https://tesla-essentials.com/#previous-model-3" },
+      { "@type": "ListItem", "position": 1, "name": "Model Y (2026+) accessories", "url": "https://tesla-essentials.com/#new-model-y" },
+      { "@type": "ListItem", "position": 2, "name": "Model 3 (2024+) accessories", "url": "https://tesla-essentials.com/#new-model-3" },
+      { "@type": "ListItem", "position": 3, "name": "Model Y (2020–25) accessories", "url": "https://tesla-essentials.com/#previous-model-y" },
+      { "@type": "ListItem", "position": 4, "name": "Model 3 (2017–23) accessories", "url": "https://tesla-essentials.com/#previous-model-3" },
       { "@type": "ListItem", "position": 5, "name": "Model S accessories", "url": "https://tesla-essentials.com/#model-s" },
       { "@type": "ListItem", "position": 6, "name": "Universal Tesla accessories", "url": "https://tesla-essentials.com/#universal" }
     ]
@@ -97,13 +97,23 @@
        ============================================================ -->
   <header class="hero" role="banner">
     <div class="hero__bg">
-      <img src="images/hero/hero.jpg" alt="Tesla Model Y on an open road at sunset" loading="eager" fetchpriority="high">
+      <picture>
+        <source srcset="images/hero/hero-1600.webp" type="image/webp">
+        <img src="images/hero/hero-1600.jpg" alt="Tesla Model Y on an open road at sunset" width="1600" height="900" loading="eager" fetchpriority="high">
+      </picture>
     </div>
     <div class="hero__content">
       <p class="hero__eyebrow">Curated by a 7-year Tesla owner</p>
       <h1>Tesla <span>Essentials</span></h1>
-      <p class="hero__sub">I've owned nearly every Tesla in the past seven years. These are the accessories that actually held up — picked by model, so you only see what fits.</p>
-      <a href="#new-model-y" class="cta-button">Browse by model</a>
+      <p class="hero__sub">I've owned nearly every Tesla in the past seven years. These are the accessories that actually held up — picked by model and year, so you only see what fits.</p>
+      <nav class="hero__models" aria-label="Jump to your model">
+        <a href="#new-model-y" class="hero-pill">Model Y <span>2026+</span></a>
+        <a href="#new-model-3" class="hero-pill">Model 3 <span>2024+</span></a>
+        <a href="#previous-model-y" class="hero-pill">Model Y <span>2020–25</span></a>
+        <a href="#previous-model-3" class="hero-pill">Model 3 <span>2017–23</span></a>
+        <a href="#model-s" class="hero-pill">Model S</a>
+        <a href="#universal" class="hero-pill">Universal</a>
+      </nav>
     </div>
   </header>
 
@@ -121,10 +131,10 @@
        ============================================================ -->
   <nav class="category-nav" aria-label="Tesla model categories">
     <div class="category-nav__inner">
-      <a href="#new-model-y" class="nav-pill active">New Model Y</a>
-      <a href="#new-model-3" class="nav-pill">New Model 3</a>
-      <a href="#previous-model-y" class="nav-pill">Previous Model Y</a>
-      <a href="#previous-model-3" class="nav-pill">Previous Model 3</a>
+      <a href="#new-model-y" class="nav-pill active">Model Y (2026+)</a>
+      <a href="#new-model-3" class="nav-pill">Model 3 (2024+)</a>
+      <a href="#previous-model-y" class="nav-pill">Model Y (2020–25)</a>
+      <a href="#previous-model-3" class="nav-pill">Model 3 (2017–23)</a>
       <a href="#model-s" class="nav-pill">Model S</a>
       <a href="#universal" class="nav-pill">Universal</a>
       <a href="https://cyberoffroading.com/" target="_blank" rel="noopener" class="nav-pill nav-pill--external">Cybertruck<span aria-hidden="true">↗</span></a>
@@ -138,7 +148,7 @@
          ============================================================ -->
     <section id="new-model-y" class="section">
       <div class="section__header">
-        <h2>New Model Y</h2>
+        <h2>Model Y (2026+)</h2>
         <p class="section__intro">For the 2026+ Model Y "Juniper" refresh. Updated interior, redesigned center display, and revised dimensions — different fitment from the previous generation.</p>
         <p class="section__guide">
           <span class="section__guide-label">Screen size</span>
@@ -147,132 +157,163 @@
       </div>
       <div class="product-grid">
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/floor-mats-new-my/photo.jpg" alt="3D MAXpider all-weather floor mats for new Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/floor-mats-new-my/photo-1600.webp" type="image/webp">
+              <img src="images/products/floor-mats-new-my/photo-1600.jpg" alt="3D MAXpider all-weather floor mats for new Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Floor Mats · 3D MAXpider</span>
-            <h3 itemprop="name">3D MAXpider All-Weather Floor Mats</h3>
-            <p class="product-card__review" itemprop="description">After trying every major brand across all my Teslas, these win on fitment, ease of cleaning, and durability. Perfect-fit edges and tall walls catch real-world mess without curling up.</p>
-            <a href="https://amzn.to/493FJTx" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="3D MAXpider">
+            <h3>3D MAXpider All-Weather Floor Mats</h3>
+            <p class="product-card__review">After trying every major brand across all my Teslas, these win on fitment, ease of cleaning, and durability. Perfect-fit edges and tall walls catch real-world mess without curling up.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2026+ Model Y (Juniper)</p>
+            <a href="https://amzn.to/493FJTx" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/sunshade-new-my/photo.jpg" alt="Covercraft custom-fit windshield sunshade for new Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/sunshade-new-my/photo-1600.webp" type="image/webp">
+              <img src="images/products/sunshade-new-my/photo-1600.jpg" alt="Covercraft custom-fit windshield sunshade for new Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Sunshade · Covercraft</span>
-            <h3 itemprop="name">Covercraft Custom-Fit Sunshade</h3>
-            <p class="product-card__review" itemprop="description">Easiest deployment, best heat blocking, and the most durable sunshade I've used. Mine on a previous Tesla lasted 5+ years and is still going.</p>
-            <a href="https://amzn.to/4cBZWSJ" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Covercraft">
+            <h3>Covercraft Custom-Fit Sunshade</h3>
+            <p class="product-card__review">Easiest deployment, best heat blocking, and the most durable sunshade I've used. Mine on a previous Tesla lasted 5+ years and is still going.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2026+ Model Y (Juniper)</p>
+            <a href="https://amzn.to/4cBZWSJ" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/screen-15-4-anti/photo.jpg" alt="Spigen anti-glare 15.4 inch screen protector for new Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/screen-15-4-anti/photo-1600.webp" type="image/webp">
+              <img src="images/products/screen-15-4-anti/photo-1600.jpg" alt="Spigen anti-glare 15.4 inch screen protector for new Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Screen Protector · Spigen · 15.4&Prime;</span>
-            <h3 itemprop="name">Spigen Anti-Glare Screen Protector — 15.4&Prime;</h3>
-            <p class="product-card__review" itemprop="description">Cuts glare, kills fingerprints, and makes the screen readable in direct sun. Spigen's installation frame nails the alignment on the first try.</p>
-            <a href="https://amzn.to/3QAX6Vu" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Anti-Glare Screen Protector — 15.4&Prime;</h3>
+            <p class="product-card__review">Cuts glare, kills fingerprints, and makes the screen readable in direct sun. Spigen's installation frame nails the alignment on the first try.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> Juniper Standard · 15.4&Prime; display</p>
+            <a href="https://amzn.to/3QAX6Vu" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/screen-15-4-clear/photo.jpg" alt="Spigen crystal clear 15.4 inch screen protector for new Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/screen-15-4-clear/photo-1600.webp" type="image/webp">
+              <img src="images/products/screen-15-4-clear/photo-1600.jpg" alt="Spigen crystal clear 15.4 inch screen protector for new Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Screen Protector · Spigen · 15.4&Prime;</span>
-            <h3 itemprop="name">Spigen Crystal Clear Screen Protector — 15.4&Prime;</h3>
-            <p class="product-card__review" itemprop="description">Same Spigen alignment frame, optically-clear glass. Pick this if you prefer color saturation over glare reduction.</p>
-            <a href="https://amzn.to/4n0kEiH" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Crystal Clear Screen Protector — 15.4&Prime;</h3>
+            <p class="product-card__review">Same Spigen alignment frame, optically-clear glass. Pick this if you prefer color saturation over glare reduction.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> Juniper Standard · 15.4&Prime; display</p>
+            <a href="https://amzn.to/4n0kEiH" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/screen-16/photo.jpg" alt="Spigen 16 inch screen protector for new Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/screen-16/photo-1600.webp" type="image/webp">
+              <img src="images/products/screen-16/photo-1600.jpg" alt="Spigen 16 inch screen protector for new Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Screen Protector · Spigen · 16&Prime;</span>
-            <h3 itemprop="name">Spigen Screen Protector — 16&Prime; Model Y</h3>
-            <p class="product-card__review" itemprop="description">For Model Y trims with the 16&Prime; display. Same install frame, sized for the larger panel.</p>
-            <a href="https://amzn.to/4mTdz3i" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Screen Protector — 16&Prime; Model Y</h3>
+            <p class="product-card__review">For Model Y trims with the 16&Prime; display. Same install frame, sized for the larger panel.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> Juniper Premium &amp; Performance · 16&Prime; display</p>
+            <a href="https://amzn.to/4mTdz3i" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/organizer-new/photo.jpg" alt="Spigen center console organizer for new Tesla Model Y Premium and Performance" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/organizer-new/photo-1600.webp" type="image/webp">
+              <img src="images/products/organizer-new/photo-1600.jpg" alt="Spigen center console organizer for new Tesla Model Y Premium and Performance" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Console · Spigen</span>
-            <h3 itemprop="name">Spigen Center Console Organizer</h3>
-            <p class="product-card__review" itemprop="description">Best build quality I've used in any console organizer. Fits the new Model Y Premium &amp; Performance trims.</p>
-            <a href="https://amzn.to/42zONff" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Center Console Organizer</h3>
+            <p class="product-card__review">Best build quality I've used in any console organizer. Fits the new Model Y Premium &amp; Performance trims.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> Juniper Premium &amp; Performance trims</p>
+            <a href="https://amzn.to/42zONff" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/organizer-armrest-new/photo.jpg" alt="Spigen armrest console insert for new Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/organizer-armrest-new/photo-1600.webp" type="image/webp">
+              <img src="images/products/organizer-armrest-new/photo-1600.jpg" alt="Spigen armrest console insert for new Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Console · Spigen · Armrest</span>
-            <h3 itemprop="name">Spigen Armrest Console Insert</h3>
-            <p class="product-card__review" itemprop="description">Companion to the main console organizer. Adds a finished, partitioned tray to the armrest bin.</p>
-            <a href="https://amzn.to/499UFPV" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Armrest Console Insert</h3>
+            <p class="product-card__review">Companion to the main console organizer. Adds a finished, partitioned tray to the armrest bin.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2026+ Model Y (Juniper)</p>
+            <a href="https://amzn.to/499UFPV" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/door-liner-new-my/photo.jpg" alt="BASENOR door pocket liners for new Tesla Model Y Juniper" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/door-liner-new-my/photo-1600.webp" type="image/webp">
+              <img src="images/products/door-liner-new-my/photo-1600.jpg" alt="BASENOR door pocket liners for new Tesla Model Y Juniper" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Door Liners · BASENOR</span>
-            <h3 itemprop="name">BASENOR Door Pocket Liners — Set of 4</h3>
-            <p class="product-card__review" itemprop="description">Waterproof TPE trays with the emergency-button cutout. Make spills trivial and corral loose items. Heads up: they add a layer between you and the rear emergency door release.</p>
-            <a href="https://amzn.to/3OTAPl7" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="BASENOR">
+            <h3>BASENOR Door Pocket Liners — Set of 4</h3>
+            <p class="product-card__review">Waterproof TPE trays with the emergency-button cutout. Make spills trivial and corral loose items. Heads up: they add a layer between you and the rear emergency door release.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2026+ Model Y (Juniper)</p>
+            <a href="https://amzn.to/3OTAPl7" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/storage-front-my/photo.jpg" alt="Spigen front under-seat storage box for Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/storage-front-my/photo-1600.webp" type="image/webp">
+              <img src="images/products/storage-front-my/photo-1600.jpg" alt="Spigen front under-seat storage box for Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Storage · Spigen</span>
-            <h3 itemprop="name">Spigen Under-Seat Storage Box</h3>
-            <p class="product-card__review" itemprop="description">Hidden, waterproof, anti-rattle organizer for the dead space under the first-row seats. Fits all Model Y generations.</p>
-            <a href="https://amzn.to/4tKLcHo" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Under-Seat Storage Box</h3>
+            <p class="product-card__review">Hidden, waterproof, anti-rattle organizer for the dead space under the first-row seats. Fits all Model Y generations.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> All Model Y generations</p>
+            <a href="https://amzn.to/4tKLcHo" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/plate-new-my/photo.jpg" alt="No-drill license plate holder for new Tesla Model Y Juniper Premium" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/plate-new-my/photo-1600.webp" type="image/webp">
+              <img src="images/products/plate-new-my/photo-1600.jpg" alt="No-drill license plate holder for new Tesla Model Y Juniper Premium" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">License Plate · No-Drill</span>
-            <h3 itemprop="name">No-Drill License Plate Mount — Juniper Premium</h3>
-            <p class="product-card__review" itemprop="description">Mounts cleanly without drilling into the bumper. Designed for the Juniper Model Y Premium trim — verify your trim fitment before ordering.</p>
-            <a href="https://amzn.to/4tDyHx3" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
+            <h3>No-Drill License Plate Mount — Juniper Premium</h3>
+            <p class="product-card__review">Mounts cleanly without drilling into the bumper. Designed for the Juniper Model Y Premium trim — verify your trim fitment before ordering.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> Juniper Premium trim only</p>
+            <a href="https://amzn.to/4tDyHx3" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
@@ -284,7 +325,7 @@
          ============================================================ -->
     <section id="new-model-3" class="section section--alt">
       <div class="section__header">
-        <h2>New Model 3</h2>
+        <h2>Model 3 (2024+)</h2>
         <p class="section__intro">For the 2024+ Model 3 "Highland" refresh. Stalkless steering, redesigned interior.</p>
         <p class="section__guide">
           <span class="section__guide-label">Screen size</span>
@@ -293,132 +334,163 @@
       </div>
       <div class="product-grid">
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/floor-mats-new-m3/photo.jpg" alt="3D MAXpider all-weather floor mats for new Tesla Model 3 Highland" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/floor-mats-new-m3/photo-1600.webp" type="image/webp">
+              <img src="images/products/floor-mats-new-m3/photo-1600.jpg" alt="3D MAXpider all-weather floor mats for new Tesla Model 3 Highland" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Floor Mats · 3D MAXpider</span>
-            <h3 itemprop="name">3D MAXpider All-Weather Floor Mats</h3>
-            <p class="product-card__review" itemprop="description">My go-to mat across every Tesla I've owned. Best fitment, easiest to hose off, holds up year after year.</p>
-            <a href="https://amzn.to/4vXu8iE" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="3D MAXpider">
+            <h3>3D MAXpider All-Weather Floor Mats</h3>
+            <p class="product-card__review">My go-to mat across every Tesla I've owned. Best fitment, easiest to hose off, holds up year after year.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2024+ Model 3 (Highland)</p>
+            <a href="https://amzn.to/4vXu8iE" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/sunshade-m3/photo.jpg" alt="Covercraft custom-fit windshield sunshade for Tesla Model 3" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/sunshade-m3/photo-1600.webp" type="image/webp">
+              <img src="images/products/sunshade-m3/photo-1600.jpg" alt="Covercraft custom-fit windshield sunshade for Tesla Model 3" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Sunshade · Covercraft</span>
-            <h3 itemprop="name">Covercraft Custom-Fit Sunshade</h3>
-            <p class="product-card__review" itemprop="description">Single sunshade SKU fits all Model 3 generations. Snap-deploy, real heat blocking, lasts years.</p>
-            <a href="https://amzn.to/4mZHLtI" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Covercraft">
+            <h3>Covercraft Custom-Fit Sunshade</h3>
+            <p class="product-card__review">Single sunshade SKU fits all Model 3 generations. Snap-deploy, real heat blocking, lasts years.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> All Model 3 generations</p>
+            <a href="https://amzn.to/4mZHLtI" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/screen-15-4-anti/photo.jpg" alt="Spigen anti-glare 15.4 inch screen protector for new Tesla Model 3 Highland" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/screen-15-4-anti/photo-1600.webp" type="image/webp">
+              <img src="images/products/screen-15-4-anti/photo-1600.jpg" alt="Spigen anti-glare 15.4 inch screen protector for new Tesla Model 3 Highland" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Screen Protector · Spigen · 15.4&Prime;</span>
-            <h3 itemprop="name">Spigen Anti-Glare Screen Protector — 15.4&Prime;</h3>
-            <p class="product-card__review" itemprop="description">Cuts glare, kills fingerprints, makes the screen readable in direct sun. Spigen's install frame nails alignment first try.</p>
-            <a href="https://amzn.to/3QAX6Vu" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Anti-Glare Screen Protector — 15.4&Prime;</h3>
+            <p class="product-card__review">Cuts glare, kills fingerprints, makes the screen readable in direct sun. Spigen's install frame nails alignment first try.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> All Highland trims · 15.4&Prime; display</p>
+            <a href="https://amzn.to/3QAX6Vu" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/screen-15-4-clear/photo.jpg" alt="Spigen crystal clear 15.4 inch screen protector for new Tesla Model 3 Highland" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/screen-15-4-clear/photo-1600.webp" type="image/webp">
+              <img src="images/products/screen-15-4-clear/photo-1600.jpg" alt="Spigen crystal clear 15.4 inch screen protector for new Tesla Model 3 Highland" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Screen Protector · Spigen · 15.4&Prime;</span>
-            <h3 itemprop="name">Spigen Crystal Clear Screen Protector — 15.4&Prime;</h3>
-            <p class="product-card__review" itemprop="description">Same install frame, optically-clear glass. Pick this if you prefer saturation over glare reduction.</p>
-            <a href="https://amzn.to/4n0kEiH" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Crystal Clear Screen Protector — 15.4&Prime;</h3>
+            <p class="product-card__review">Same install frame, optically-clear glass. Pick this if you prefer saturation over glare reduction.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> All Highland trims · 15.4&Prime; display</p>
+            <a href="https://amzn.to/4n0kEiH" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/organizer-new/photo.jpg" alt="Spigen center console organizer for new Tesla Model 3 Highland" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/organizer-new/photo-1600.webp" type="image/webp">
+              <img src="images/products/organizer-new/photo-1600.jpg" alt="Spigen center console organizer for new Tesla Model 3 Highland" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Console · Spigen</span>
-            <h3 itemprop="name">Spigen Center Console Organizer</h3>
-            <p class="product-card__review" itemprop="description">Best build quality I've found in a console organizer. Fits the new Model 3 Highland.</p>
-            <a href="https://amzn.to/42zONff" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Center Console Organizer</h3>
+            <p class="product-card__review">Best build quality I've found in a console organizer. Fits the new Model 3 Highland.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2024+ Model 3 (Highland)</p>
+            <a href="https://amzn.to/42zONff" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/organizer-armrest-new/photo.jpg" alt="Spigen armrest console insert for new Tesla Model 3 Highland" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/organizer-armrest-new/photo-1600.webp" type="image/webp">
+              <img src="images/products/organizer-armrest-new/photo-1600.jpg" alt="Spigen armrest console insert for new Tesla Model 3 Highland" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Console · Spigen · Armrest</span>
-            <h3 itemprop="name">Spigen Armrest Console Insert</h3>
-            <p class="product-card__review" itemprop="description">Companion to the main console organizer. Adds a finished, partitioned tray to the armrest bin.</p>
-            <a href="https://amzn.to/499UFPV" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Armrest Console Insert</h3>
+            <p class="product-card__review">Companion to the main console organizer. Adds a finished, partitioned tray to the armrest bin.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2024+ Model 3 (Highland)</p>
+            <a href="https://amzn.to/499UFPV" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/door-liner-prev-m3/photo.jpg" alt="BASENOR door pocket liners for new Tesla Model 3 Highland" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/door-liner-new-m3/photo-1600.webp" type="image/webp">
+              <img src="images/products/door-liner-new-m3/photo-1600.jpg" alt="BASENOR door pocket liners for new Tesla Model 3 Highland" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Door Liners · BASENOR</span>
-            <h3 itemprop="name">BASENOR Door Pocket Liners — Set of 4</h3>
-            <p class="product-card__review" itemprop="description">Waterproof TPE trays for the front and rear door pockets. Make spills trivial and corral loose items. Heads up: adds a layer between you and the rear emergency door release.</p>
-            <a href="https://amzn.to/4vXWl9c" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="BASENOR">
+            <h3>BASENOR Door Pocket Liners — Set of 4</h3>
+            <p class="product-card__review">Waterproof TPE trays for the front and rear door pockets. Make spills trivial and corral loose items. Heads up: adds a layer between you and the rear emergency door release.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2024+ Model 3 (Highland)</p>
+            <a href="https://amzn.to/4vXWl9c" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/plate-new-m3-no-cam/photo.jpg" alt="TesFram no-drill license plate holder for Tesla Model 3 Highland without front bumper camera" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/plate-new-m3-no-cam/photo-1600.webp" type="image/webp">
+              <img src="images/products/plate-new-m3-no-cam/photo-1600.jpg" alt="TesFram no-drill license plate holder for Tesla Model 3 Highland without front bumper camera" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">License Plate · TesFram · No Front Cam</span>
-            <h3 itemprop="name">TesFram No-Drill Mount — Highland (No Front Cam)</h3>
-            <p class="product-card__review" itemprop="description">For 2024–2025 Highland Model 3s without the front bumper camera. No-drill install via the factory tow-hook anchor, height-adjustable.</p>
-            <a href="https://amzn.to/3R5YOya" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="TesFram">
+            <h3>TesFram No-Drill Mount — Highland (No Front Cam)</h3>
+            <p class="product-card__review">For 2024–2025 Highland Model 3s without the front bumper camera. No-drill install via the factory tow-hook anchor, height-adjustable.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2024–25 Highland · no front camera</p>
+            <a href="https://amzn.to/3R5YOya" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/plate-2026-m3/photo.jpg" alt="TesFram lockable no-drill license plate holder for 2026 Tesla Model 3 with front camera" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/plate-2026-m3/photo-1600.webp" type="image/webp">
+              <img src="images/products/plate-2026-m3/photo-1600.jpg" alt="TesFram lockable no-drill license plate holder for 2026 Tesla Model 3 with front camera" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">License Plate · TesFram · 2026+</span>
-            <h3 itemprop="name">TesFram No-Drill Mount — 2026+ Highland</h3>
-            <p class="product-card__review" itemprop="description">Sized around the new front bumper camera. Lockable hardware to deter theft. Fits 2026+ Model 3 Standard &amp; Premium trims.</p>
-            <a href="https://amzn.to/3QyHa6c" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="TesFram">
+            <h3>TesFram No-Drill Mount — 2026+ Highland</h3>
+            <p class="product-card__review">Sized around the new front bumper camera. Lockable hardware to deter theft. Fits 2026+ Model 3 Standard &amp; Premium trims.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2026+ Highland · Standard &amp; Premium</p>
+            <a href="https://amzn.to/3QyHa6c" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/plate-2026-m3-perf/photo.jpg" alt="No-drill license plate holder for 2026 Tesla Model 3 Performance" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/plate-2026-m3-perf/photo-1600.webp" type="image/webp">
+              <img src="images/products/plate-2026-m3-perf/photo-1600.jpg" alt="No-drill license plate holder for 2026 Tesla Model 3 Performance" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">License Plate · 2026+ Performance</span>
-            <h3 itemprop="name">No-Drill Mount — 2026+ Model 3 Performance</h3>
-            <p class="product-card__review" itemprop="description">The Performance trim's bumper has different geometry than Standard / Premium — this mount is sized for it.</p>
-            <a href="https://amzn.to/4eQhGuV" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
+            <h3>No-Drill Mount — 2026+ Model 3 Performance</h3>
+            <p class="product-card__review">The Performance trim's bumper has different geometry than Standard / Premium — this mount is sized for it.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2026+ Model 3 Performance only</p>
+            <a href="https://amzn.to/4eQhGuV" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
@@ -430,7 +502,7 @@
          ============================================================ -->
     <section id="previous-model-y" class="section">
       <div class="section__header">
-        <h2>Previous Model Y</h2>
+        <h2>Model Y (2020–25)</h2>
         <p class="section__intro">For 2020–early 2025 Model Y (pre-Juniper). Original interior layout.</p>
         <p class="section__guide">
           <span class="section__guide-label">Screen size</span>
@@ -439,120 +511,147 @@
       </div>
       <div class="product-grid">
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/floor-mats-prev-my/photo.jpg" alt="3D MAXpider all-weather floor mats for previous Tesla Model Y 2020-2024" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/floor-mats-prev-my/photo-1600.webp" type="image/webp">
+              <img src="images/products/floor-mats-prev-my/photo-1600.jpg" alt="3D MAXpider all-weather floor mats for previous Tesla Model Y 2020-2024" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Floor Mats · 3D MAXpider</span>
-            <h3 itemprop="name">3D MAXpider All-Weather Floor Mats</h3>
-            <p class="product-card__review" itemprop="description">My go-to mat across every Tesla. Best fitment, easiest to clean, holds up for years.</p>
-            <a href="https://amzn.to/423Vk1D" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="3D MAXpider">
+            <h3>3D MAXpider All-Weather Floor Mats</h3>
+            <p class="product-card__review">My go-to mat across every Tesla. Best fitment, easiest to clean, holds up for years.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2020–25 Model Y (pre-Juniper)</p>
+            <a href="https://amzn.to/423Vk1D" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/sunshade-prev-my/photo.jpg" alt="Covercraft custom-fit windshield sunshade for previous Tesla Model Y 2020-2024" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/sunshade-prev-my/photo-1600.webp" type="image/webp">
+              <img src="images/products/sunshade-prev-my/photo-1600.jpg" alt="Covercraft custom-fit windshield sunshade for previous Tesla Model Y 2020-2024" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Sunshade · Covercraft</span>
-            <h3 itemprop="name">Covercraft Custom-Fit Sunshade</h3>
-            <p class="product-card__review" itemprop="description">Easiest deployment and best heat blocking I've tried. Five years of use and mine still looks new.</p>
-            <a href="https://amzn.to/4cFjQwg" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Covercraft">
+            <h3>Covercraft Custom-Fit Sunshade</h3>
+            <p class="product-card__review">Easiest deployment and best heat blocking I've tried. Five years of use and mine still looks new.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2020–25 Model Y (pre-Juniper)</p>
+            <a href="https://amzn.to/4cFjQwg" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/screen-15-clear/photo.jpg" alt="Spigen crystal clear 15 inch screen protector for previous Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/screen-15-clear/photo-1600.webp" type="image/webp">
+              <img src="images/products/screen-15-clear/photo-1600.jpg" alt="Spigen crystal clear 15 inch screen protector for previous Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Screen Protector · Spigen · 15&Prime;</span>
-            <h3 itemprop="name">Spigen Crystal Clear Screen Protector — 15&Prime;</h3>
-            <p class="product-card__review" itemprop="description">Tempered glass for the original 15&Prime; Model Y display. Spigen's install frame guarantees clean alignment first try.</p>
-            <a href="https://amzn.to/3QtvZM7" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Crystal Clear Screen Protector — 15&Prime;</h3>
+            <p class="product-card__review">Tempered glass for the original 15&Prime; Model Y display. Spigen's install frame guarantees clean alignment first try.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2020–25 Model Y · 15&Prime; display</p>
+            <a href="https://amzn.to/3QtvZM7" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/organizer-prev/photo.jpg" alt="Spigen center console organizer for previous Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/organizer-prev/photo-1600.webp" type="image/webp">
+              <img src="images/products/organizer-prev/photo-1600.jpg" alt="Spigen center console organizer for previous Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Console · Spigen</span>
-            <h3 itemprop="name">Spigen Center Console Organizer</h3>
-            <p class="product-card__review" itemprop="description">Best build quality on the market. Fits 2020–2024 Model Y center console.</p>
-            <a href="https://amzn.to/4t0RBwE" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Center Console Organizer</h3>
+            <p class="product-card__review">Best build quality on the market. Fits 2020–2024 Model Y center console.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2020–25 Model Y (pre-Juniper)</p>
+            <a href="https://amzn.to/4t0RBwE" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/organizer-armrest-prev/photo.jpg" alt="Spigen armrest console insert for previous Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/organizer-armrest-prev/photo-1600.webp" type="image/webp">
+              <img src="images/products/organizer-armrest-prev/photo-1600.jpg" alt="Spigen armrest console insert for previous Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Console · Spigen · Armrest</span>
-            <h3 itemprop="name">Spigen Armrest Console Insert</h3>
-            <p class="product-card__review" itemprop="description">Companion piece for the main organizer. Tidy partitioned tray for the armrest bin.</p>
-            <a href="https://amzn.to/3OKDf5I" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Armrest Console Insert</h3>
+            <p class="product-card__review">Companion piece for the main organizer. Tidy partitioned tray for the armrest bin.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2020–25 Model Y (pre-Juniper)</p>
+            <a href="https://amzn.to/3OKDf5I" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/door-liner-prev-my/photo.jpg" alt="BASENOR door pocket liners for previous Tesla Model Y 2020-2024" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/door-liner-prev-my/photo-1600.webp" type="image/webp">
+              <img src="images/products/door-liner-prev-my/photo-1600.jpg" alt="BASENOR door pocket liners for previous Tesla Model Y 2020-2024" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Door Liners · BASENOR</span>
-            <h3 itemprop="name">BASENOR Door Pocket Liners — Set of 4</h3>
-            <p class="product-card__review" itemprop="description">Waterproof TPE trays for front and rear pockets, with the emergency-button cutout. Note: adds a layer between you and the rear emergency door release.</p>
-            <a href="https://amzn.to/425knRV" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="BASENOR">
+            <h3>BASENOR Door Pocket Liners — Set of 4</h3>
+            <p class="product-card__review">Waterproof TPE trays for front and rear pockets, with the emergency-button cutout. Note: adds a layer between you and the rear emergency door release.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2020–25 Model Y (pre-Juniper)</p>
+            <a href="https://amzn.to/425knRV" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/storage-front-my/photo.jpg" alt="Spigen front under-seat storage box for Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/storage-front-my/photo-1600.webp" type="image/webp">
+              <img src="images/products/storage-front-my/photo-1600.jpg" alt="Spigen front under-seat storage box for Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Storage · Spigen · Front Row</span>
-            <h3 itemprop="name">Spigen Under-Seat Storage Box</h3>
-            <p class="product-card__review" itemprop="description">Waterproof, anti-rattle drawer that reclaims dead space under the first-row seats. Fits all Model Y generations.</p>
-            <a href="https://amzn.to/4tKLcHo" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Under-Seat Storage Box</h3>
+            <p class="product-card__review">Waterproof, anti-rattle drawer that reclaims dead space under the first-row seats. Fits all Model Y generations.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> All Model Y generations</p>
+            <a href="https://amzn.to/4tKLcHo" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/storage-rear-prev-my/photo.jpg" alt="Spigen rear of first row under-seat storage for previous Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/storage-rear-prev-my/photo-1600.webp" type="image/webp">
+              <img src="images/products/storage-rear-prev-my/photo-1600.jpg" alt="Spigen rear of first row under-seat storage for previous Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Storage · Spigen · Rear of First Row</span>
-            <h3 itemprop="name">Spigen Under-Seat Storage — Rear of First Row</h3>
-            <p class="product-card__review" itemprop="description">Second hidden compartment behind the front seats. Previous Model Y only — pre-Juniper layout.</p>
-            <a href="https://amzn.to/4vXWtFI" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Under-Seat Storage — Rear of First Row</h3>
+            <p class="product-card__review">Second hidden compartment behind the front seats. Previous Model Y only — pre-Juniper layout.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> Pre-Juniper Model Y only</p>
+            <a href="https://amzn.to/4vXWtFI" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/plate-prev-my/photo.jpg" alt="TesFram no-drill license plate holder for 2020-2024 Tesla Model Y" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/plate-prev-my/photo-1600.webp" type="image/webp">
+              <img src="images/products/plate-prev-my/photo-1600.jpg" alt="TesFram no-drill license plate holder for 2020-2024 Tesla Model Y" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">License Plate · TesFram</span>
-            <h3 itemprop="name">TesFram Height-Adjustable No-Drill Mount</h3>
-            <p class="product-card__review" itemprop="description">Bolts to the factory tow-hook anchor — no drilling, no adhesive. Height-adjustable to clear front-end aero. Fits 2020–2024 Model Y.</p>
-            <a href="https://amzn.to/41XksHn" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="TesFram">
+            <h3>TesFram Height-Adjustable No-Drill Mount</h3>
+            <p class="product-card__review">Bolts to the factory tow-hook anchor — no drilling, no adhesive. Height-adjustable to clear front-end aero. Fits 2020–2024 Model Y.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2020–25 Model Y (pre-Juniper)</p>
+            <a href="https://amzn.to/41XksHn" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
@@ -564,7 +663,7 @@
          ============================================================ -->
     <section id="previous-model-3" class="section">
       <div class="section__header">
-        <h2>Previous Model 3</h2>
+        <h2>Model 3 (2017–23)</h2>
         <p class="section__intro">For 2017–2023 Model 3 (pre-Highland). Stalk-equipped steering column, original interior.</p>
         <p class="section__guide">
           <span class="section__guide-label">Screen size</span>
@@ -573,81 +672,99 @@
       </div>
       <div class="product-grid">
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/floor-mats-prev-m3/photo.jpg" alt="3D MAXpider all-weather floor mats for previous Tesla Model 3 2017-2023" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/floor-mats-prev-m3/photo-1600.webp" type="image/webp">
+              <img src="images/products/floor-mats-prev-m3/photo-1600.jpg" alt="3D MAXpider all-weather floor mats for previous Tesla Model 3 2017-2023" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Floor Mats · 3D MAXpider</span>
-            <h3 itemprop="name">3D MAXpider All-Weather Floor Mats</h3>
-            <p class="product-card__review" itemprop="description">After trying everything, these are the mats I keep buying. Tight fitment, easy to hose off, great longevity.</p>
-            <a href="https://amzn.to/48x6NdM" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="3D MAXpider">
+            <h3>3D MAXpider All-Weather Floor Mats</h3>
+            <p class="product-card__review">After trying everything, these are the mats I keep buying. Tight fitment, easy to hose off, great longevity.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2017–23 Model 3 (pre-Highland)</p>
+            <a href="https://amzn.to/48x6NdM" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/sunshade-m3/photo.jpg" alt="Covercraft custom-fit windshield sunshade for Tesla Model 3" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/sunshade-m3/photo-1600.webp" type="image/webp">
+              <img src="images/products/sunshade-m3/photo-1600.jpg" alt="Covercraft custom-fit windshield sunshade for Tesla Model 3" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Sunshade · Covercraft</span>
-            <h3 itemprop="name">Covercraft Custom-Fit Sunshade</h3>
-            <p class="product-card__review" itemprop="description">One sunshade SKU covers all Model 3 generations. Snap-deploy, durable, real heat rejection.</p>
-            <a href="https://amzn.to/4mZHLtI" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Covercraft">
+            <h3>Covercraft Custom-Fit Sunshade</h3>
+            <p class="product-card__review">One sunshade SKU covers all Model 3 generations. Snap-deploy, durable, real heat rejection.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> All Model 3 generations</p>
+            <a href="https://amzn.to/4mZHLtI" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/screen-15-clear/photo.jpg" alt="Spigen crystal clear 15 inch screen protector for previous Tesla Model 3" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/screen-15-clear/photo-1600.webp" type="image/webp">
+              <img src="images/products/screen-15-clear/photo-1600.jpg" alt="Spigen crystal clear 15 inch screen protector for previous Tesla Model 3" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Screen Protector · Spigen · 15&Prime;</span>
-            <h3 itemprop="name">Spigen Crystal Clear Screen Protector — 15&Prime;</h3>
-            <p class="product-card__review" itemprop="description">Optically clear protector for the original 15&Prime; Model 3 display. Same alignment frame.</p>
-            <a href="https://amzn.to/3QtvZM7" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Crystal Clear Screen Protector — 15&Prime;</h3>
+            <p class="product-card__review">Optically clear protector for the original 15&Prime; Model 3 display. Same alignment frame.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2017–23 Model 3 · 15&Prime; display</p>
+            <a href="https://amzn.to/3QtvZM7" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/organizer-prev/photo.jpg" alt="Spigen center console organizer for previous Tesla Model 3" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/organizer-prev/photo-1600.webp" type="image/webp">
+              <img src="images/products/organizer-prev/photo-1600.jpg" alt="Spigen center console organizer for previous Tesla Model 3" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Console · Spigen</span>
-            <h3 itemprop="name">Spigen Center Console Organizer</h3>
-            <p class="product-card__review" itemprop="description">Best fit-and-finish I've found. Sized for the 2017–2023 Model 3 console.</p>
-            <a href="https://amzn.to/4t0RBwE" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Center Console Organizer</h3>
+            <p class="product-card__review">Best fit-and-finish I've found. Sized for the 2017–2023 Model 3 console.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2017–23 Model 3 (pre-Highland)</p>
+            <a href="https://amzn.to/4t0RBwE" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/organizer-armrest-prev/photo.jpg" alt="Spigen armrest console insert for previous Tesla Model 3" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/organizer-armrest-prev/photo-1600.webp" type="image/webp">
+              <img src="images/products/organizer-armrest-prev/photo-1600.jpg" alt="Spigen armrest console insert for previous Tesla Model 3" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Console · Spigen · Armrest</span>
-            <h3 itemprop="name">Spigen Armrest Console Insert</h3>
-            <p class="product-card__review" itemprop="description">Pairs with the main organizer to finish out the armrest bin.</p>
-            <a href="https://amzn.to/3OKDf5I" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Spigen">
+            <h3>Spigen Armrest Console Insert</h3>
+            <p class="product-card__review">Pairs with the main organizer to finish out the armrest bin.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2017–23 Model 3 (pre-Highland)</p>
+            <a href="https://amzn.to/3OKDf5I" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/plate-prev-m3/photo.jpg" alt="TesFram no-drill license plate holder for 2017-2023 Tesla Model 3" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/plate-prev-m3/photo-1600.webp" type="image/webp">
+              <img src="images/products/plate-prev-m3/photo-1600.jpg" alt="TesFram no-drill license plate holder for 2017-2023 Tesla Model 3" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">License Plate · TesFram</span>
-            <h3 itemprop="name">TesFram Height-Adjustable No-Drill Mount</h3>
-            <p class="product-card__review" itemprop="description">Threads into the factory tow-hook anchor — no drilling, no adhesive. Height-adjustable. Fits 2017–2023 Model 3.</p>
-            <a href="https://amzn.to/4tGxvsU" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="TesFram">
+            <h3>TesFram Height-Adjustable No-Drill Mount</h3>
+            <p class="product-card__review">Threads into the factory tow-hook anchor — no drilling, no adhesive. Height-adjustable. Fits 2017–2023 Model 3.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> 2017–23 Model 3 (pre-Highland)</p>
+            <a href="https://amzn.to/4tGxvsU" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
@@ -664,16 +781,19 @@
       </div>
       <div class="product-grid">
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/sunshade-s/photo.jpg" alt="Covercraft custom-fit windshield sunshade for Tesla Model S" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/sunshade-s/photo-1600.webp" type="image/webp">
+              <img src="images/products/sunshade-s/photo-1600.jpg" alt="Covercraft custom-fit windshield sunshade for Tesla Model S" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Sunshade · Covercraft</span>
-            <h3 itemprop="name">Covercraft Custom-Fit Sunshade</h3>
-            <p class="product-card__review" itemprop="description">Custom-fit windshield sunshade for the Model S, fitting all model years. Snap-deploy, real heat blocking, and the long-haul durability I've come to expect from Covercraft.</p>
-            <a href="https://www.amazon.com/dp/B00DK1BJVA?tag=kchau06-20" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Covercraft">
+            <h3>Covercraft Custom-Fit Sunshade</h3>
+            <p class="product-card__review">Custom-fit windshield sunshade for the Model S, fitting all model years. Snap-deploy, real heat blocking, and the long-haul durability I've come to expect from Covercraft.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> Model S · all years</p>
+            <a href="https://www.amazon.com/dp/B00DK1BJVA?tag=kchau06-20" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
@@ -690,54 +810,67 @@
       </div>
       <div class="product-grid">
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/usb-right-angle/photo.jpg" alt="AreMe 90-degree USB-A right-angle adapter for Tesla glove box" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/usb-right-angle/photo-1600.webp" type="image/webp">
+              <img src="images/products/usb-right-angle/photo-1600.jpg" alt="AreMe 90-degree USB-A right-angle adapter for Tesla glove box" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Tech · Glove Box USB · AreMe</span>
-            <h3 itemprop="name">AreMe 90° USB-A Adapter (4-Pack)</h3>
-            <p class="product-card__review" itemprop="description">Half of the glove-box USB workaround for a clean Sentry / dashcam SSD setup. Pair with the short USB-C cable below.</p>
-            <a href="https://amzn.to/4txj3TU" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="AreMe">
+            <h3>AreMe 90° USB-A Adapter (4-Pack)</h3>
+            <p class="product-card__review">Half of the glove-box USB workaround for a clean Sentry / dashcam SSD setup. Pair with the short USB-C cable below.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> Every Tesla</p>
+            <a href="https://amzn.to/4txj3TU" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/usb-extension/photo.jpg" alt="Afterplug short USB-A to USB-C cable for Tesla glove box dashcam" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/usb-extension/photo-1600.webp" type="image/webp">
+              <img src="images/products/usb-extension/photo-1600.jpg" alt="Afterplug short USB-A to USB-C cable for Tesla glove box dashcam" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Tech · Glove Box USB · Afterplug</span>
-            <h3 itemprop="name">Afterplug 5.5&Prime; USB-A to USB-C Cable</h3>
-            <p class="product-card__review" itemprop="description">10 Gbps short cable that pairs with the right-angle adapter. Lets your dashcam SSD sit out of the way without strain on the port.</p>
-            <a href="https://amzn.to/4t0SmG0" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
-            <meta itemprop="brand" content="Afterplug">
+            <h3>Afterplug 5.5&Prime; USB-A to USB-C Cable</h3>
+            <p class="product-card__review">10 Gbps short cable that pairs with the right-angle adapter. Lets your dashcam SSD sit out of the way without strain on the port.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> Every Tesla</p>
+            <a href="https://amzn.to/4t0SmG0" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/jack-pads/photo.jpg" alt="Tesla jack pad pucks set for safe lifting" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/jack-pads/photo-1600.webp" type="image/webp">
+              <img src="images/products/jack-pads/photo-1600.jpg" alt="Tesla jack pad pucks set for safe lifting" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">Maintenance · Jack Pads</span>
-            <h3 itemprop="name">Jack Pad Set (4-Pack)</h3>
-            <p class="product-card__review" itemprop="description">Always carry a set of pucks in the trunk. They prevent battery-pack damage anytime a shop needs to lift the car.</p>
-            <a href="https://amzn.to/4vRo3UV" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer" itemprop="url">View on Amazon</a>
+            <h3>Jack Pad Set (4-Pack)</h3>
+            <p class="product-card__review">Always carry a set of pucks in the trunk. They prevent battery-pack damage anytime a shop needs to lift the car.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> Every Tesla</p>
+            <a href="https://amzn.to/4vRo3UV" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">View on Amazon</a>
           </div>
         </article>
 
-        <article class="product-card" itemscope itemtype="https://schema.org/Product">
+        <article class="product-card">
           <div class="product-card__image">
-            <img src="images/products/plate-1975-premium/photo.jpg" alt="1975 Creations Quick Bandit premium license plate mount made in the USA" loading="lazy" width="400" height="300" itemprop="image">
+            <picture>
+              <source srcset="images/products/plate-1975-premium/photo-1600.webp" type="image/webp">
+              <img src="images/products/plate-1975-premium/photo-1600.jpg" alt="1975 Creations Quick Bandit premium license plate mount made in the USA" loading="lazy" width="400" height="300">
+            </picture>
           </div>
           <div class="product-card__info">
             <span class="product-card__fit">License Plate · 1975 Creations · Premium · USA-made</span>
-            <h3 itemprop="name">1975 Creations Quick Bandit Mount</h3>
-            <p class="product-card__review" itemprop="description">Made-in-USA quick-release license plate mount in machined aluminum. The upgrade pick if budget isn't the constraint — different vehicle-specific kits available for every Tesla.</p>
-            <a href="https://www.1975creations.com/" class="cta-button" target="_blank" rel="noopener noreferrer" itemprop="url">Visit 1975 Creations</a>
-            <meta itemprop="brand" content="1975 Creations">
+            <h3>1975 Creations Quick Bandit Mount</h3>
+            <p class="product-card__review">Made-in-USA quick-release license plate mount in machined aluminum. The upgrade pick if budget isn't the constraint — different vehicle-specific kits available for every Tesla.</p>
+            <p class="product-card__fits"><span class="product-card__fits-label">Fits</span> Every Tesla · model-specific kits</p>
+            <a href="https://www.1975creations.com/" class="cta-button" target="_blank" rel="nofollow sponsored noopener noreferrer">Visit 1975 Creations</a>
           </div>
         </article>
 
@@ -782,10 +915,10 @@
           <p class="site-footer__tagline">Curated accessories for every Tesla.</p>
         </div>
         <nav class="site-footer__links" aria-label="Footer">
-          <a href="#new-model-y">New Model Y</a>
-          <a href="#new-model-3">New Model 3</a>
-          <a href="#previous-model-y">Previous Model Y</a>
-          <a href="#previous-model-3">Previous Model 3</a>
+          <a href="#new-model-y">Model Y (2026+)</a>
+          <a href="#new-model-3">Model 3 (2024+)</a>
+          <a href="#previous-model-y">Model Y (2020–25)</a>
+          <a href="#previous-model-3">Model 3 (2017–23)</a>
           <a href="#model-s">Model S</a>
           <a href="#universal">Universal</a>
           <a href="https://cyberoffroading.com/" target="_blank" rel="noopener">Cybertruck ↗</a>
@@ -801,6 +934,6 @@
     </div>
   </footer>
 
-  <script defer src="js/main.js?v=2"></script>
+  <script defer src="js/main.js?v=3"></script>
 </body>
 </html>

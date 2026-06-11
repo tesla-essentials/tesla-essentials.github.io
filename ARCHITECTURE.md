@@ -31,26 +31,36 @@ Tesla-Essentials.com is a single-page affiliate content site focused on essentia
 ## Key Conventions
 
 ### Product Organization
-Sections are organized by vehicle generation rather than pure category:
-- New Model Y (Juniper refresh)
-- New Model 3
-- Previous Model Y
-- Previous Model 3
+Sections are organized by vehicle generation rather than pure category, with
+year-anchored labels so owners don't need to decode "New" vs "Previous":
+- Model Y (2026+) — Juniper refresh
+- Model 3 (2024+) — Highland refresh
+- Model Y (2020–25) — pre-Juniper
+- Model 3 (2017–23) — pre-Highland
 - Model S (growing)
 - Universal (works across models)
 
-This matches how buyers actually shop ("What fits my car?").
+This matches how buyers actually shop ("What fits my car?"). Section anchor IDs
+(`#new-model-y`, etc.) are stable URLs and intentionally do NOT change with labels.
 
 ### Product Cards
-Every product uses Schema.org markup (`itemscope itemtype="https://schema.org/Product"`).
+Plain semantic HTML — **no Schema.org Product microdata**. (Removed June 2026:
+Google requires `offers`/`review`/`aggregateRating` for Product markup, and we
+can't supply stable prices for rotating Amazon listings, so the markup only
+generated Search Console errors.)
+
+Every card includes a `product-card__fits` chip stating exactly which years/trims
+the product fits — this is the site's core value proposition at the decision point.
 
 Affiliate links must include:
 `rel="nofollow sponsored noopener noreferrer"`
 
 ### Images
-- Keep originals.
-- Use the `scripts/optimize-images.sh` script for new/replacement photos.
-- Prefer WebP + JPEG fallbacks with `srcset` when possible.
+- Keep originals (`photo.jpg`).
+- Run `scripts/optimize-images.sh` on every new/replacement photo — it emits
+  `photo-1600.webp` + `photo-1600.jpg`.
+- Cards use `<picture>` with a WebP `<source>` and the `-1600.jpg` as the
+  `<img>` fallback, plus `width`/`height` and `loading="lazy"`.
 
 ### Design System
 Defined in `css/style.css` using CSS custom properties.

@@ -135,7 +135,8 @@
       var target = document.getElementById(href.slice(1));
       if (!target) return;
       e.preventDefault();
-      var top = target.getBoundingClientRect().top + window.scrollY - (nav ? nav.offsetHeight + 12 : 12);
+      // Keep in sync with the CSS scroll-padding-top offset (nav height + 16px)
+      var top = target.getBoundingClientRect().top + window.scrollY - (nav ? nav.offsetHeight + 16 : 16);
       window.scrollTo({ top: top, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
       history.replaceState(null, '', href);
     });
