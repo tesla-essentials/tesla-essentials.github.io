@@ -27,6 +27,7 @@
   --accent:          #cc0000;
   --accent-hover:    #a30000;
   --accent-soft:     rgba(204, 0, 0, 0.08);
+  --accent-ring:     rgba(204, 0, 0, 0.30);
 
   /* Shadows — soft, layered, premium */
   --shadow-sm:       0 1px 2px rgba(10, 10, 10, 0.04);
@@ -73,6 +74,7 @@
     --accent:        #ff3838;
     --accent-hover:  #ff5252;
     --accent-soft:   rgba(255, 56, 56, 0.10);
+    --accent-ring:   rgba(255, 56, 56, 0.35);
 
     --shadow-sm:     0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-md:     0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.5);
@@ -720,6 +722,77 @@ p {
   text-transform: uppercase;
   color: var(--ink-mute);
   flex-shrink: 0;
+}
+
+/* "Pairs with" cross-link — for products recommended as a set.
+   Dashed border = incomplete on its own; clicking jumps to (and pulses) the partner card. */
+.product-card__pair {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  border: 1px dashed var(--edge-strong);
+  border-radius: var(--r-sm);
+  padding: 7px 10px;
+  text-decoration: none;
+  transition:
+    border-color 200ms var(--ease),
+    color 200ms var(--ease),
+    background 200ms var(--ease);
+}
+
+.product-card__pair:hover,
+.product-card__pair:focus-visible {
+  color: var(--ink);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.product-card__pair-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  flex-shrink: 0;
+}
+
+.product-card__pair-name {
+  flex-grow: 1;
+}
+
+.product-card__pair-arrow {
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: transform 200ms var(--ease-out);
+}
+
+.product-card__pair:hover .product-card__pair-arrow {
+  transform: translateX(3px);
+}
+
+/* Landing on a card via a pair link: brief accent ring so the eye finds the partner */
+.product-card:target {
+  animation:
+    cardFallback 0.5s forwards,
+    pairTargetPulse 1.4s var(--ease-out) 0.25s 1;
+}
+
+@keyframes pairTargetPulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent-ring);
+    border-color: var(--accent);
+  }
+  60% {
+    border-color: var(--accent);
+  }
+  100% {
+    box-shadow: 0 0 0 22px transparent;
+    border-color: var(--edge);
+  }
 }
 
 /* ============================================================
