@@ -356,6 +356,65 @@ p {
 }
 
 /* ============================================================
+   REFERRAL STRIP — inverted bar at the very top of the page
+   ============================================================ */
+.referral-bar {
+  display: block;
+  background: var(--ink);
+  color: var(--bg);
+  text-decoration: none;
+}
+
+.referral-bar__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 11px 24px;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.referral-bar__q {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.referral-bar__offer {
+  font-weight: 600;
+}
+
+.referral-bar__arrow {
+  display: inline-block; /* inline elements ignore transform */
+  transition: transform 200ms var(--ease-out);
+}
+
+.referral-bar:hover .referral-bar__arrow,
+.referral-bar:focus-visible .referral-bar__arrow {
+  transform: translateX(3px);
+}
+
+.referral-bar:hover .referral-bar__offer,
+.referral-bar:focus-visible .referral-bar__offer {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 639px) {
+  .referral-bar__inner {
+    padding: 10px 20px;
+    font-size: 0.78rem;
+  }
+}
+
+/* ============================================================
    OWNER BAR
    ============================================================ */
 .owner-bar {
