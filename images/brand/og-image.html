@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!--
+  Source art-board for images/brand/og-image.jpg (1200x630 social card).
+  Mirrors the site hero: onyx ground, champagne sunburst, stacked wordmark.
+  Regenerate with:
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --screenshot=og.png --window-size=1200,630 --hide-scrollbars --virtual-time-budget=10000 file://$(pwd)/images/brand/og-image.html
+    sips -s format jpeg -s formatOptions 90 og.png --out images/brand/og-image.jpg
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Manrope:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    position: relative;
+    background: #0d0c0a;
+    font-family: 'Manrope', sans-serif;
+  }
+
+  /* Champagne hairline rays fanning up from the horizon (matches .hero__rays) */
+  .rays {
+    position: absolute;
+    inset: 0;
+    background: repeating-conic-gradient(
+      from 262deg at 50% 112%,
+      rgba(216, 179, 92, 0.15) 0deg 0.4deg,
+      transparent 0.4deg 5.85deg
+    );
+    -webkit-mask-image: radial-gradient(ellipse 82% 108% at 50% 112%, #000 26%, transparent 76%);
+    mask-image: radial-gradient(ellipse 82% 108% at 50% 112%, #000 26%, transparent 76%);
+  }
+
+  /* Soft gold pool behind the headline */
+  .pool {
+    position: absolute;
+    left: 50%;
+    bottom: -14%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 62%;
+    background: radial-gradient(ellipse at 50% 100%, rgba(216, 179, 92, 0.12), transparent 70%);
+    filter: blur(16px);
+  }
+
+  .content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: #d8b35c;
+    text-shadow: 0 0 14px rgba(216, 179, 92, 0.5);
+    margin-bottom: 26px;
+    padding-left: 0.34em;
+  }
+
+  .wordmark {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.82;
+    letter-spacing: 0.015em;
+  }
+
+  .wordmark .t { display: block; color: #f4efe3; font-size: 128px; }
+  .wordmark .e {
+    display: block;
+    font-size: 128px;
+    color: transparent;
+    -webkit-text-stroke: 2.5px #d8b35c;
+    text-shadow: 0 0 26px rgba(216, 179, 92, 0.22);
+  }
+
+  /* Deco rule ——◆—— */
+  .rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 440px;
+    margin: 30px 0 24px;
+  }
+  .rule .line { flex: 1; height: 1px; }
+  .rule .line.l { background: linear-gradient(90deg, transparent, #d8b35c); }
+  .rule .line.r { background: linear-gradient(90deg, #d8b35c, transparent); }
+  .rule .diamond {
+    width: 8px; height: 8px;
+    background: #d8b35c;
+    transform: rotate(45deg);
+    box-shadow: 0 0 12px rgba(216, 179, 92, 0.6);
+  }
+
+  .tagline {
+    font-size: 25px;
+    line-height: 1.4;
+    color: #a49d8b;
+    max-width: 720px;
+  }
+
+  .domain {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    letter-spacing: 0.18em;
+    color: #857d6b;
+  }
+</style>
+</head>
+<body>
+  <div class="rays"></div>
+  <div class="pool"></div>
+
+  <div class="content">
+    <p class="eyebrow">Curated by a 7-year Tesla owner</p>
+    <h1 class="wordmark"><span class="t">Tesla</span><span class="e">Essentials</span></h1>
+    <div class="rule"><span class="line l"></span><span class="diamond"></span><span class="line r"></span></div>
+    <p class="tagline">The accessories that actually held up &mdash; for every Model&nbsp;3, Y, S &amp; Cybertruck.</p>
+  </div>
+
+  <p class="domain">tesla-essentials.com</p>
+</body>
+</html>

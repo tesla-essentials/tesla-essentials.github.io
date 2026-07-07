@@ -119,6 +119,17 @@ Defined in `css/style.css` using CSS custom properties (`--onyx`, `--lacquer`,
 - `prefers-reduced-motion` disables reveals, hover transforms, and glow pulses
 - Focus: gold `:focus-visible` outlines everywhere; CTA uses a layered ring
 
+## Social card (OG image)
+
+`images/brand/og-image.jpg` (1200×630) is the Open Graph / Twitter card, and it's
+a designed art-board — not a photo. The source is `images/brand/og-image.html`,
+which reuses the site's Marquee tokens and fonts (onyx ground, champagne sunburst,
+stacked wordmark). To regenerate after editing the HTML, run the command in the
+file's top comment: Chrome headless screenshots it at 1200×630 → PNG, then `sips`
+converts to JPEG q90. Keep the `.html` source in the repo alongside the `.jpg`
+(same pattern as rivian-essentials). The old photo hero was removed with the July
+2026 redesign — there is no longer a hero raster.
+
 ## Adding New Content
 
 See `CLAUDE.md` → "Adding Products" and the image workflow section.
