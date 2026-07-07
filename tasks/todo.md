@@ -99,6 +99,32 @@ can be found and makes money.
 
 ---
 
+## 2026-07-07 — Full Redesign + Filterability + Product Coverage Push
+
+Goal (user-set): (1) full redesign — minimal, graphic-design polish like rivian-essentials, with a "futuristic art-deco" take on cyberoffroading's retro-futuristic neon theory; (2) multi-agent product coverage review + accessory research; (3) cross-vehicle filter/search replacing per-vehicle sections where possible (reference rivian-essentials), with multi-vehicle chips on cards.
+
+### Plan
+- [x] Research: map current site, rivian-essentials filter/design system, cyberoffroading neon theory (3 parallel agents)
+- [x] Define "Futuristic Art-Deco" design direction ("Marquee") — documented in ARCHITECTURE.md
+- [x] Restructure index.html: single filterable product grid; 42 sectioned cards deduped to 33 with `data-fits`/`data-cat`; per-vehicle fit chips
+- [x] Filter toolbar: vehicle buttons + category buttons + debounced text search (AND-combined); empty state + reset; live count; URL hash sync with legacy-anchor mapping
+- [x] Full CSS redesign on new tokens (dark-only — see Review for rationale)
+- [x] Multi-agent coverage review + accessory research → tasks/product-research.md
+- [x] Verify in browser (hero/grid/footer screenshots, mobile 375px no-overflow probe, console + network clean, all six vehicle filter counts validated)
+- [x] Update ARCHITECTURE.md/CLAUDE.md docs, record lessons
+
+### Review (2026-07-07)
+- **Design**: "Marquee" futuristic art-deco — warm onyx `#0d0c0a`, champagne gold `#d8b35c` signage, red CTAs only. Signature: CSS conic-gradient sunburst hero + `——◆——` deco rules. Big Shoulders Display / Manrope / JetBrains Mono.
+- **Decision — dark-only**: the previous light-first mode was dropped. Art-deco neon theory requires a dark ground, and rivian-essentials (the quality bar) is dark-only. Revisit only if analytics show a problem.
+- **Filtering**: single-select vehicle + single-select category + search. Multi-select vehicles was considered and skipped — owners have one car; cross-model products already surface via multi-token `data-fits`.
+- **Dedupe map**: same-SKU cards merged (screen protectors, organizers, armrests, M3 sunshade, under-seat storage): 42 → 33 cards, zero products lost. Old section anchors (`#new-model-y` etc.) still deep-link correctly via JS mapping.
+- **Research**: 30-agent workflow — 45 candidates, 19 verified (3 rejected in adversarial verification). Next-10 shortlist in tasks/product-research.md; charging category is the biggest gap.
+- **Second merge pass (same day, user-directed)**: per-model SKU families collapsed to one card with a button per model (mats 4→1, sunshades 4→1, door liners 3→1, organizer 2→1, armrest 2→1, TesFram 2→1): 22 cards.
+- **Third merge pass + picker modal (same day, user-directed)**: full "combine ANY overlap" pass → **11 cards** (from 42 originals). Screen protectors 4→1, all license-plate mounts incl. 1975 premium 6→1, under-seat storage 2→1, tech pairs → 2 "kit" cards. Every multi-link card now collapses (via JS) into a single gold **"Choose your fit"** button opening a shared `<dialog>` picker; inline links kept as no-JS/crawler fallback. Modal narrows options to the active vehicle filter; `data-picker="kit"` reframes for buy-both bundles. Verified: 11 cards, per-vehicle counts (Y26/Y20 11, M3-24 10, M3-17 9, S 5, CT 4), modal populate + narrowing + kit framing, mobile 375px no-overflow, console clean, all option links keep `nofollow sponsored`.
+- **Not done / follow-ups**: commit + deploy; add researched products (needs amzn.to links + photos); Lighthouse on live domain; Model S sunshade still uses raw amazon.com tag link; the `.product-card__pair*` CSS is now dead (pairs-with pattern removed) — safe to prune later.
+
+---
+
 **Status**: Major "all of it" execution push completed on 2026-05-28.
 
 Completed in this push:

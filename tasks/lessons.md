@@ -47,6 +47,24 @@ Amazon prices can't honestly supply them. Plain HTML beats invalid structured da
 "stuck active nav pill" bug, but reading `main.js` showed `setActive()` clears all
 pills before bailing — no bug. Verify each agent claim against the code before fixing.
 
+## 2026-07 — "Marquee" Redesign + Filter Grid
+
+**Browser scroll restoration overrides load-time `scrollTo`.**
+A deep-link handler that scrolls via `setTimeout(fn, 0)` at script-eval time loses
+to the browser's scroll restoration on reload. Run programmatic on-load scrolls
+after the `load` event (plus a small delay), or they silently do nothing.
+
+**Preview-harness metrics can be artifacts.** The headless preview reported
+`window.innerHeight === 0` before any resize, which breaks IntersectionObserver
+reveals and makes scroll assertions meaningless. After an explicit viewport
+resize the values were real. Distrust a "bug" that only reproduces before the
+harness has set a viewport.
+
+**When merging duplicate cards into one multi-vehicle card, the copy must be
+de-model-ed.** Merged cards inherited reviews like "Fits the new Model Y…" that
+contradicted the second vehicle chip. Fitment lives in chips + `data-fits`;
+review copy stays model-neutral.
+
 ## Future Entries
 
 (Add new lessons here as work progresses on this repo)

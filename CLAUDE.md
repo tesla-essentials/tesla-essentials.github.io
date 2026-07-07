@@ -4,49 +4,50 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## Project Overview
 
-Tesla-Essentials.com — A curated affiliate site for essential accessories across the Tesla lineup (primarily Model 3 and Model Y, with coverage for S, X, and Cybertruck). Single-page static site with a refined, premium "showroom minimalism" aesthetic.
+Tesla-Essentials.com — A curated affiliate site for essential accessories across the Tesla lineup (primarily Model 3 and Model Y, with coverage for S, X, and Cybertruck). Single-page static site with a "Marquee" futuristic art-deco aesthetic (July 2026 redesign): warm onyx, champagne-gold signage, Tesla red for CTAs only, dark-only.
 
-**Key difference from sister site (cyberoffroading.com)**: Lighter, more mainstream Tesla aesthetic (white space, soft rounding, light + dark modes) rather than brutalist industrial design.
+**Sister sites**: cyberoffroading.com (brutalist neon; Cybertruck) and rivian-essentials (the filter-system reference). Adapt patterns to this site's deco language — don't copy 1:1.
 
 ## Architecture
 
-- **Single-page site** with model-generation organization (`#new-model-y`, `#new-model-3`, `#previous-model-y`, etc.).
+- **Single-page site** with ONE filterable product grid (`#collection`) — no per-model sections. Cards carry `data-fits` (vehicle tokens) + `data-cat` (category token); the sticky toolbar filters by vehicle, category, and text search. See ARCHITECTURE.md for tokens and deep-link hashes.
 - **No build step**: Pure HTML/CSS/JS. Edit directly.
 - **Hosting**: GitHub Pages + Cloudflare.
-- **Reference implementation**: `/Users/kevinchau/localdev/cyberoffroading/` (many patterns and lessons can be adapted).
 
 ## Key Files
 
-- `index.html` — Main experience. Organized by vehicle generation.
-- `css/style.css` — Design system using Manrope + JetBrains Mono, soft shadows, generous whitespace.
-- `js/main.js` — Lightweight vanilla JS (reveals, sticky nav, etc.).
-- `PLAN.md` — Original detailed site plan (historical reference).
+- `index.html` — Main experience. One deduplicated, filterable product grid.
+- `css/style.css` — "Marquee" design system: Big Shoulders Display + Manrope + JetBrains Mono.
+- `js/main.js` — Vanilla JS: filter engine, reveals, sticky toolbar, deep links.
+- `ARCHITECTURE.md` — Structure, filter tokens, conventions.
 - `tasks/todo.md` — Current prioritized improvement backlog.
 - `tasks/lessons.md` — Project-specific lessons and rules.
+- `tasks/product-research.md` — Verified accessory candidates to add next (July 2026).
 
 ## Design System Notes
 
-- Light mode is primary; dark mode via `prefers-color-scheme`.
-- Rounded corners (`--r-md: 12px`, etc.) instead of zero-radius clip-paths.
-- Tesla red used sparingly as accent only.
-- Product cards are plain semantic HTML with per-card fitment chips (no Product microdata).
+- Dark-only. Champagne gold (`--gold`) = signage/structure/active; red (`--red`) = CTA action only. "Glow is earned."
+- Small geometric radii (3–4px) + gold-tinted hairline borders; deco rules (`——◆——`) and the hero sunburst are the signature motifs.
+- Product cards are plain semantic HTML with per-vehicle `fit-chip`s (no Product microdata).
 
 ## Adding Products
 
-1. Add a new `<article class="product-card">` in the appropriate model section (no Schema.org Product microdata — see ARCHITECTURE.md for why it was removed).
-2. Include the `product-card__fit` eyebrow, title, review, a `product-card__fits` chip (exact years/trims it fits), and the affiliate CTA.
-3. Add photo to `images/products/<category-slug>/photo.jpg`, then run `./scripts/optimize-images.sh` on it.
-4. Reference images via `<picture>`: WebP `<source srcset="...photo-1600.webp">` + `<img src="...photo-1600.jpg" width="400" height="300" loading="lazy">`.
-5. Use `rel="nofollow sponsored noopener noreferrer"` on affiliate links.
-6. Bump the `?v=` cache-buster on style.css/main.js if you touched them.
+1. Add ONE `<article class="product-card">` to the `#collection` grid — even if it fits several vehicles (no Schema.org Product microdata — see ARCHITECTURE.md for why it was removed).
+2. Set `data-fits` (space-separated: `y26 y20 m324 m317 s ct`) and `data-cat` (`mats|shade|screen|storage|plate|tech|maint`).
+3. **Multiple purchase links** (per-model SKUs OR multi-part kits): ONE card with a `product-card__ctas-label` + `product-card__ctas` group holding the links. Set `data-picker="fit"` (choose-your-version) or `data-picker="kit"` (buy-each-part) on the group. Each `<a>` needs `data-fits` (which vehicles it applies to — drives modal narrowing) and an optional `data-note` (trim detail / part role). JS turns the group into one "Select your model" button (kit groups read "See the N-piece kit") opening `#fit-modal`; keep the inline links as fallback. Affiliate disclosure stays in the footer only — do not repeat it in the modal. Card `data-fits` = union of every option's `data-fits`. **Merge aggressively**: if two products answer the same buying question, they're options in one card's modal, not two cards. Even size/trim/camera-specific variants belong as separate *options* (the modal note prevents mis-buys), not separate cards.
+   **Single-SKU products**: one full-width `cta-button` ("View on Amazon") plus visible `fit-chip`s that agree with `data-fits`.
+4. Add photo to `images/products/<category-slug>/photo.jpg`, then run `./scripts/optimize-images.sh` on it.
+5. Reference images via `<picture>`: WebP `<source srcset="...photo-1600.webp">` + `<img src="...photo-1600.jpg" width="400" height="300" loading="lazy">`.
+6. Use `rel="nofollow sponsored noopener noreferrer"` on all affiliate links (every button in a multi-SKU group).
+7. Update the static count in the toolbar (`#count`) and the collection intro if you add/remove cards (JS recomputes on filter, but the initial HTML value should match).
+8. Bump the `?v=` cache-buster on style.css/main.js if you touched them.
 
-## Current Priorities (May 2026)
+## Current Priorities (July 2026)
 
 See `tasks/todo.md` for the living backlog. Major themes:
-- Documentation hygiene
-- Establishing image optimization workflow early
-- Porting hard-learned accessibility patterns from the sister site
-- Guides strategy is currently on hold (removed initial attempts)
+- Add verified products from `tasks/product-research.md` (charging category first)
+- Commit + deploy the redesign; Lighthouse pass on the live domain
+- Guides strategy still on hold
 
 ## Useful Commands
 
