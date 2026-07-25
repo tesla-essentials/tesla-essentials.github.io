@@ -226,6 +226,11 @@
     out.manualMiles = pick(pairs, /manual_miles$|manual[^.]*(mile|distance)/, num, 0, 8000);
     out.startTime = pick(pairs, /race\.started_at$/, parseDate) ||
                     pick(pairs, /(^|\.)started_at$|start|depart/, parseDate);
+    // When fsddb last moved the mile counters. The projection must pair
+    // the miles with the clock reading from the same instant, or stale
+    // data silently inflates the projected time.
+    out.dataTime = pick(pairs, /counter_updated_at$/, parseDate) ||
+                   pick(pairs, /vehicle_updated_at$|(^|\.)updated_at$/, parseDate);
     out.endTime = pick(pairs, /race\.ended_at$/, parseDate) ||
                   pick(pairs, /(^|\.)ended_at$|(end|finish|complete)[^.]*(time|at|date)/, parseDate);
     out.finalSeconds = pick(pairs, /final_seconds$/, num, 60, 3e6);
@@ -324,6 +329,7 @@
       manualMiles: (parsed && parsed.manualMiles !== null && parsed.manualMiles !== undefined)
         ? parsed.manualMiles : FALLBACK.manualMiles,
       startTime: (parsed && parsed.startTime) || FALLBACK.startTime,
+      dataTime: (parsed && parsed.dataTime) || null,
       endTime: (parsed && parsed.endTime) || null,
       elapsedMs: (parsed && parsed.elapsedMs) || null,
       beatRecord: (parsed && typeof parsed.beatRecord === 'boolean') ? parsed.beatRecord : null
@@ -357,9 +363,33 @@
     return d.elapsedMs;
   }
 
+  // How old the mile counters are. The race clock is always live, but the
+  // miles are only as fresh as fsddb's last counter update plus whatever
+  // the relay/mirror added on top.
+  function dataAgeMs(d) {
+    if (!d.dataTime || d.finished) return 0;
+    return Math.max(0, Date.now() - d.dataTime);
+  }
+
+  // Elapsed time AT THE MOMENT the miles were recorded — the only clock
+  // reading that pairs with them. Using the live clock instead would
+  // charge the run for time it has no mileage data for: with 874 of
+  // 2,850 miles down, every hour of stale data inflated the projection
+  // by 3.3 hours, marching the board toward "behind the record" and
+  // snapping back on the next update.
+  function paceElapsedMs(d) {
+    var el = elapsedNow(d);
+    if (!d.dataTime || !d.startTime || d.finished) return el;
+    var atData = d.dataTime - d.startTime;
+    if (!isFinite(atData) || atData <= 0) return el;
+    return Math.min(el, atData);
+  }
+
   function projectedMs(d) {
     if (d.miles <= 0 || d.totalMiles <= 0) return null;
-    return elapsedNow(d) * (d.totalMiles / d.miles);
+    var proj = paceElapsedMs(d) * (d.totalMiles / d.miles);
+    // A projection can never undercut time already on the clock.
+    return Math.max(proj, elapsedNow(d));
   }
 
   /* ----------------------------------------------------------
@@ -389,10 +419,12 @@
   function render() {
     if (!data) return;
     var el = elapsedNow(data);
+    var paceEl = paceElapsedMs(data);
     var proj = projectedMs(data);
     var ticking = isTicking(data);
     var pct = data.totalMiles > 0 ? Math.min(100, (data.miles / data.totalMiles) * 100) : 0;
-    var hours = el / 3600000;
+    // Average speed pairs miles with the clock from the same instant too
+    var hours = paceEl / 3600000;
 
     if (els.miles) els.miles.textContent = fmtMiles(data.miles);
     if (els.total) els.total.textContent = fmtMiles(data.totalMiles);
@@ -406,9 +438,11 @@
 
     // Uncertainty window (never displayed as ±): BAND_SHARE of the
     // REMAINING time. Drives the confidence % and the too-close call.
+    // Everything after the last data point is extrapolation, so the
+    // window grows with stale data instead of hiding it.
     var band = null;
     if (proj !== null && isFinite(proj) && !data.finished) {
-      band = Math.max(0, proj - el) * BAND_SHARE;
+      band = Math.max(0, proj - paceEl) * BAND_SHARE;
     }
     if (els.conf) {
       if (band !== null && proj > 0) {
@@ -449,9 +483,12 @@
     }
 
     if (els.note) {
-      var ago = fetchedAt ? Math.max(0, Math.round((Date.now() - fetchedAt) / 1000)) : null;
+      // Report the age of the MILES (fsddb's counter), not of our fetch —
+      // a fetch that returns hour-old numbers isn't "updated 3s ago".
+      var ageMin = Math.round(dataAgeMs(data) / 60000);
+      var ago = ageMin >= 2 ? ' · miles ' + ageMin + ' min old' : ' · miles current';
       els.note.textContent = !isSnapshot
-        ? 'Pulled from fsddb.com' + (ago !== null ? ' · updated ' + ago + 's ago' : '') +
+        ? 'Pulled from fsddb.com' + ago +
           ' · projection = elapsed time ÷ share of route driven.'
         : attempted
           ? 'Live feed unreachable right now — showing the last verified state. Projection = elapsed time ÷ share of route driven.'

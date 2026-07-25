@@ -7,12 +7,16 @@
 # fresh; js/cannonball.js reads it via raw.githubusercontent.com, which
 # does send Access-Control-Allow-Origin.
 #
-# Freshness: cron fires every 5 minutes (GitHub's minimum) and each run
-# LOOPS for ~4.5 minutes, polling fsddb every ~45 s and pushing only
-# when the data changed — so the relay lags fsddb by ~1 minute even
-# when the cron scheduler jitters. Volatile fields the board never
-# reads (live_location, route polylines, server_now) are pruned so
-# "changed" means the counters moved, not the GPS dot.
+# Freshness: do NOT rely on cron cadence. GitHub throttles scheduled
+# workflows hard on public repos — a '*/5' cron actually fired about
+# ONCE AN HOUR here (14:51, 15:51, 16:38, 17:37, 18:32 UTC), so short
+# runs left ~55-minute holes with no polling at all. Instead each run
+# LOOPS for ~55 minutes, polling every 45 s and pushing only when the
+# data changed, so a single cron firing per hour still gives continuous
+# coverage; the concurrency group keeps exactly one run live with one
+# queued behind it. Volatile fields the board never reads
+# (live_location, route polylines, server_now) are pruned so "changed"
+# means the counters moved, not the GPS dot.
 #
 # Self-quiescing: when the snapshot stops changing (run over), nothing
 # is pushed. Safe to delete this workflow + the cannonball-data branch
@@ -36,7 +40,7 @@ concurrency:
 jobs:
   relay:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 58
     steps:
       - name: Poll snapshot and publish changes to cannonball-data
         shell: python3 {0}
@@ -47,8 +51,9 @@ jobs:
           import json, os, re, subprocess, time, urllib.request
 
           UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
-          DEADLINE = time.time() + 265   # ~4.5 min; next cron covers the rest
+          DEADLINE = time.time() + 3300  # ~55 min: outlive the cron throttling
           POLL_S = 45
+          TOKEN_REFRESH_S = 900          # re-read the ?client= token periodically
 
           def get(url, accept=None):
               req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept': accept or '*/*'})
@@ -64,6 +69,10 @@ jobs:
               return o
 
           def publish(body):
+              # Step out of the work dir before deleting it — a run now
+              # publishes many times, and rm'ing the cwd breaks the next
+              # subprocess fork.
+              os.chdir('/tmp')
               subprocess.run(['rm', '-rf', '/tmp/relay'], check=True)
               os.makedirs('/tmp/relay')
               os.chdir('/tmp/relay')
@@ -78,16 +87,24 @@ jobs:
                          'cannonball-data']):
                   subprocess.run(a, check=True)
 
-          # The snapshot ?client= token rotates per race — read the current
-          # one off the tracker page once per run.
+          # The snapshot ?client= token rotates per race — re-read it off
+          # the tracker page periodically, since a run now spans ~55 min.
           path = '/trackers/fsdcannonball/snapshot'
-          try:
-              page = get('https://fsddb.com/trackers/FSDCannonball').decode('utf-8', 'replace')
-              m = re.search(r'data-snapshot-url="(/trackers/[^"]+)"', page)
-              if m:
-                  path = m.group(1)
-          except Exception as e:
-              print('page fetch failed, using default snapshot path:', e)
+          token_read_at = 0.0
+
+          def refresh_token():
+              global path, token_read_at
+              try:
+                  page = get('https://fsddb.com/trackers/FSDCannonball').decode('utf-8', 'replace')
+                  m = re.search(r'data-snapshot-url="(/trackers/[^"]+)"', page)
+                  if m and m.group(1) != path:
+                      print('snapshot path ->', m.group(1))
+                      path = m.group(1)
+                  token_read_at = time.time()
+              except Exception as e:
+                  print('page fetch failed, keeping snapshot path %r: %s' % (path, e))
+
+          refresh_token()
 
           last = None
           try:
@@ -98,6 +115,8 @@ jobs:
 
           pushes = 0
           while True:
+              if time.time() - token_read_at > TOKEN_REFRESH_S:
+                  refresh_token()
               try:
                   data = json.loads(get('https://fsddb.com' + path, 'application/json'))
                   if 'race' in data or 'public_route' in data:

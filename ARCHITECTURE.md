@@ -125,7 +125,15 @@ Defined in `css/style.css` using CSS custom properties (`--onyx`, `--lacquer`,
 A non-commercial engagement section between the collection and the Cybertruck
 promo. `js/cannonball.js` fetches the FSD Cannonball record-attempt data from
 `fsddb.com/trackers/FSDCannonball` **client-side** and renders a projected total
-run time: `projected = elapsed ÷ (miles completed ÷ route miles)`. All durations
+run time: `projected = elapsed ÷ (miles completed ÷ route miles)`, where
+**`elapsed` is the clock reading at the instant fsddb recorded those miles**
+(`counter_updated_at`), not the live clock — pairing stale miles with a live
+clock silently inflates the projection by `route ÷ miles` hours for every hour
+of staleness (at 874 of 2,850 miles that was 3.3 h per hour, marching the board
+toward "behind the record" and snapping back on each update). The race clock
+and the "Elapsed" stat still tick live; only the pace ratio, avg mph and
+confidence window use the paired reading, and the footnote states how old the
+mile counters are. All durations
 render in hours only (never days) so they compare at a glance against the "time
 to beat" (the fastest zero-intervention FSD Cannonball — 49:55:57 by @BLKMDL3,
 May 2026); the board shows the projected ± delta vs that record, going gold
@@ -158,12 +166,15 @@ reads go through `api.allorigins.win` (corsproxy.io blocks production origins
 on its free tier — don't re-add it). During the July 2026 race both public
 mirrors (allorigins, codetabs) sat on 520/522 errors for hours, so the site
 runs its own relay: `.github/workflows/cannonball-relay.yml` fires on a 5-min
-cron and each run *loops* for ~4.5 minutes, polling fsddb every ~45 s and
+cron and each run *loops for ~55 minutes*, polling fsddb every ~45 s and
 force-pushing a pruned snapshot (~2 KB — no route polyline, no live_location)
 to the single-commit `cannonball-data` branch whenever the counters actually
 change; the browser reads it from raw.githubusercontent.com — which, unlike
-fsddb, serves CORS headers. Net lag is ~1 min (fsddb's own counter cadence +
-one poll + one client refresh at 60 s), immune to GitHub cron jitter. Note
+fsddb, serves CORS headers. **Never shorten that loop to rely on cron
+cadence**: GitHub throttles scheduled workflows on public repos, and a `*/5`
+cron was observed firing only about once an hour, so 4.5-minute runs left
+55-minute holes with no polling at all. A ~55-minute loop means one firing per
+hour still gives continuous coverage. Note
 fsddb intentionally delays public *location* data by 15 min
 (`location_delay_minutes`) — the mile counters the board uses are
 near-real-time. The relay skips pushes when nothing changed, so it goes

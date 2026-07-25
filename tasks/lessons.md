@@ -81,6 +81,23 @@ failed in prod); allorigins works but caches ~5 min (cache-bust with a
 throwaway param) and, like codetabs, intermittently 522s when the upstream is
 under load. Chain at least two mirrors and keep a hardcoded fallback.
 
+**A live clock plus a stale counter is a silent lie.** The cannonball board
+projected `elapsed ÷ share of route driven` using the *live* race clock against
+mile counters that could be an hour old. Every hour of stale data inflated the
+projection by `route ÷ miles` hours (3.3 h/hour at 30% of route), so the board
+drifted steadily toward "behind the record" between updates and snapped back on
+each refresh — looking like a bug in the data feed when the math was the bug.
+Any rate/projection must pair a measurement with the timestamp of *that*
+measurement, and the UI should state the data's age rather than implying
+freshness ("updated 3s ago" described our fetch, not the numbers in it).
+
+**GitHub throttles scheduled workflows far below the cron you write.** A
+`*/5 * * * *` cron on this public repo actually fired roughly once an hour.
+Short-lived polling runs therefore left ~55-minute gaps. Don't trust cron
+cadence for freshness — make each run long enough to cover the worst observed
+gap (a ~55-minute internal loop), and verify the *interval between runs* in the
+Actions history rather than measuring one lucky run right after a push trigger.
+
 ## Future Entries
 
 (Add new lessons here as work progresses on this repo)
