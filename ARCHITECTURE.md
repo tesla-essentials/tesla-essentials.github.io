@@ -23,6 +23,7 @@ JetBrains Mono (labels, eyebrows, chips).
 ├── index.html                 # The main experience (single filterable grid)
 ├── css/style.css              # "Marquee" design system
 ├── js/main.js                 # Vanilla JS: filter engine, reveals, toolbar
+├── js/cannonball.js           # FSD Cannonball live-telemetry board (fsddb.com)
 ├── images/
 │   ├── hero/                  # (og:image only — hero is now pure graphic)
 │   └── products/<slug>/       # Product photos (kept reasonably optimized)
@@ -118,6 +119,23 @@ Defined in `css/style.css` using CSS custom properties (`--onyx`, `--lacquer`,
 - Champagne gold = structure/signage/active states; red = CTA action only
 - `prefers-reduced-motion` disables reveals, hover transforms, and glow pulses
 - Focus: gold `:focus-visible` outlines everywhere; CTA uses a layered ring
+
+### FSD Cannonball telemetry board (`#fsd-cannonball`)
+
+A non-commercial engagement section between the collection and the Cybertruck
+promo. `js/cannonball.js` fetches David Moss's run data from
+`fsddb.com/trackers/FSDCannonball` **client-side** and renders a projected total
+run time: `projected = elapsed ÷ (miles completed ÷ route miles)`.
+
+fsddb.com has no documented public API, so the fetcher is deliberately
+defensive: it walks a source list (guessed JSON endpoint → the page itself →
+public CORS mirrors of the page) and fuzzy-parses whatever comes back
+(`__NEXT_DATA__` JSON trees or visible-text patterns like `"1,234 / 2,732 mi"`).
+If every source fails, it falls back to a hardcoded last-verified result and
+labels the board as a snapshot — it never renders empty. States are driven by
+`data-state` on `#telemetry`: `loading | live | snapshot | done`. While a run is
+live (known start time, not finished), the elapsed clock and projection tick
+every second; the tracker is re-polled every 90 s.
 
 ## Social card (OG image)
 
