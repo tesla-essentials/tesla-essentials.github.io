@@ -123,23 +123,43 @@ Defined in `css/style.css` using CSS custom properties (`--onyx`, `--lacquer`,
 ### FSD Cannonball telemetry board (`#fsd-cannonball`)
 
 A non-commercial engagement section between the collection and the Cybertruck
-promo. `js/cannonball.js` fetches David Moss's run data from
+promo. `js/cannonball.js` fetches the FSD Cannonball record-attempt data from
 `fsddb.com/trackers/FSDCannonball` **client-side** and renders a projected total
 run time: `projected = elapsed ÷ (miles completed ÷ route miles)`. All durations
 render in hours only (never days) so they compare at a glance against the "time
-to beat" (`RECORD_MS` in the JS — the fastest zero-intervention FSD Cannonball,
-49h 55m, May 2026); the board shows the projected ± delta vs that record, going
-gold only when ahead (glow is earned).
+to beat" (the fastest zero-intervention FSD Cannonball — 49:55:57 by @BLKMDL3,
+May 2026); the board shows the projected ± delta vs that record, going gold
+only when ahead (glow is earned).
 
-fsddb.com has no documented public API, so the fetcher is deliberately
-defensive: it walks a source list (guessed JSON endpoint → the page itself →
-public CORS mirrors of the page) and fuzzy-parses whatever comes back
-(`__NEXT_DATA__` JSON trees or visible-text patterns like `"1,234 / 2,732 mi"`).
-If every source fails, it falls back to a hardcoded last-verified result and
-labels the board as a snapshot — it never renders empty. States are driven by
-`data-state` on `#telemetry`: `loading | live | snapshot | done`. While a run is
-live (known start time, not finished), the elapsed clock and projection tick
-every second; the tracker is re-polled every 90 s.
+The fsddb internals were verified against the real site (July 2026). It's a
+Rails app — no `__NEXT_DATA__`, no `/api/…` routes. The tracker page embeds a
+complete `let snapshot = {…}` JSON blob and polls
+`/trackers/fsdcannonball/snapshot?client=<token>` (the token rotates per race
+and lives in the page's `data-snapshot-url`; without it the endpoint answers
+`{"error": "This tracker page is stale…"}`). Field semantics that matter:
+`public_route.planned_total_miles` is the route length and
+`public_route.progress_miles` the miles completed — `total_miles` /
+`self_driving_miles` are miles *driven so far*, never the route length. There
+is no interventions counter; `manual_miles` is the honesty metric (the board's
+"Manual miles" stat). `race.time_to_beat_seconds` / `race.final_seconds` /
+`race.beat_record` drive the record math, and the live value overrides the
+hardcoded record constant. fsddb serves **no CORS headers**, so cross-origin
+reads go through `api.allorigins.win` (corsproxy.io blocks production origins
+on its free tier — don't re-add it). The source chain is: direct snapshot JSON
+(only useful if fsddb ever enables CORS) → the page via allorigins (workhorse —
+parses the embedded snapshot and refreshes the `?client=` token) → the snapshot
+endpoint via allorigins → both again via api.codetabs.com (second mirror; both
+mirrors intermittently 522 when fsddb is under race-day load). Parsing prefers exact key paths, then fuzzy key
+matching, then visible-text patterns (`"78 of 2,850 planned miles"`,
+`"Time to beat 49:55:57"`, `"Race clock 1:35:09"`).
+
+If every source fails, the board falls back to a hardcoded last-verified state
+and labels itself a snapshot — it never renders empty, and a snapshot never
+ticks (a stale clock would fabricate elapsed time). States are driven by
+`data-state` on `#telemetry`: `loading | live | snapshot | done`. While a run
+is live (known start, not finished, live feed reachable), the elapsed clock and
+projection tick every second; the tracker is re-polled every 90 s with a
+cache-buster on the mirror URL (allorigins caches ~5 min otherwise).
 
 ## Social card (OG image)
 

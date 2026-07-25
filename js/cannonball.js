@@ -1,17 +1,37 @@
 /* ============================================================
    TESLA-ESSENTIALS.COM — FSD Cannonball live telemetry
-   Pulls David Moss's run data from the FSDDB tracker
-   (https://fsddb.com/trackers/FSDCannonball) in the visitor's
-   browser and projects the total run time from pace so far:
+   Pulls the FSD Cannonball record-attempt data from the FSDDB
+   tracker (https://fsddb.com/trackers/FSDCannonball) in the
+   visitor's browser and projects the total run time from pace:
 
        projected = elapsed ÷ (miles completed ÷ route miles)
 
-   fsddb.com has no documented public API, so this is built
-   defensively: try a likely JSON endpoint, then the page itself,
-   then read-only CORS mirrors of the page — and scrape whatever
-   fields we can find. Anything missing falls back to the last
-   verified result so the board never renders empty.
-   Fully vanilla, no deps. Honors prefers-reduced-motion via CSS.
+   Verified against the real site (July 2026): fsddb is a Rails
+   app that embeds a `let snapshot = {...}` JSON blob in the
+   tracker page and polls /trackers/fsdcannonball/snapshot
+   (?client= token required, rotates per race — scrape it from
+   the page's data-snapshot-url). fsddb sends NO CORS headers,
+   so cross-origin reads must go through a CORS mirror; the
+   direct endpoint stays first in the chain only in case they
+   ever enable CORS. corsproxy.io blocks production origins on
+   its free tier, so allorigins.win is the mirror of record.
+
+   Snapshot fields that matter (real names):
+     public_route.planned_total_miles  route length (2,850)
+     public_route.progress_miles       miles completed on route
+     total_miles / self_driving_miles  miles driven so far
+       (NOT the route length — do not map these to totalMiles)
+     manual_miles                      the honesty metric; fsddb
+                                       has no "interventions" key
+     race.started_at / ended_at        run clock
+     race.final_seconds                elapsed, once finished
+     race.time_to_beat_seconds         179757 = 49:55:57 record
+     race.record_holder                "@BLKMDL3"
+     race.beat_record                  true/false once decided
+     status                            "active" while running
+
+   Anything missing falls back to the last verified snapshot so
+   the board never renders empty. Fully vanilla, no deps.
    ============================================================ */
 (function () {
   'use strict';
@@ -23,30 +43,52 @@
   var REFRESH_MS = 90000;   // re-poll the tracker every 90s
   var FETCH_TIMEOUT_MS = 9000;
 
-  // Time to beat: fastest zero-intervention FSD Cannonball to date —
-  // 2,833 mi coast to coast in 49h 55m (May 2026). Update when broken.
-  var RECORD_MS = (49 * 3600 + 55 * 60) * 1000;
+  // Snapshot JSON path. The ?client= token rotates per race; this is the
+  // value observed July 2026, and refresh() re-scrapes the live one from
+  // the page's data-snapshot-url whenever the page is the source that wins.
+  var snapshotPath = '/trackers/fsdcannonball/snapshot?client=20260724-race-1';
 
-  // Last verified result (July 2026): David Moss, Tesla Diner LA →
-  // Myrtle Beach SC on FSD, zero interventions. Shown only if every
-  // live source fails, and labeled as a snapshot when it is.
+  // Time to beat: fastest zero-intervention FSD Cannonball to date —
+  // 49:55:57 by @BLKMDL3 (May 2026), exactly as the tracker's
+  // race.time_to_beat_seconds reports it. Overridden by the live feed.
+  var recordMs = 179757 * 1000;
+
+  // Last verified live state (probed 2026-07-25 06:12 UTC): David Moss,
+  // Owen Sparks and Spencer, NYC Red Ball Garage → Portofino Inn Redondo
+  // Beach, run in progress. Shown only if every live source fails, and
+  // labeled as a snapshot when it is (a snapshot never ticks).
   var FALLBACK = {
-    miles: 2732.4,
-    totalMiles: 2732.4,
-    elapsedMs: ((2 * 24) + 20) * 3600 * 1000, // 2d 20h
-    interventions: 0,
-    startTime: null,
-    finished: true
+    miles: 78,
+    totalMiles: 2850,
+    manualMiles: 0,
+    startTime: Date.parse('2026-07-24T21:38:02-07:00'),
+    elapsedMs: Date.parse('2026-07-24T23:12:27-07:00') - Date.parse('2026-07-24T21:38:02-07:00'),
+    finished: false
   };
 
-  // Order matters: cheapest/cleanest first. The proxies are public
-  // read-only mirrors that add CORS headers to the same page.
-  var SOURCES = [
-    { url: 'https://fsddb.com/api/trackers/FSDCannonball', kind: 'json' },
-    { url: TRACKER_PAGE, kind: 'html' },
-    { url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(TRACKER_PAGE), kind: 'html' },
-    { url: 'https://corsproxy.io/?url=' + encodeURIComponent(TRACKER_PAGE), kind: 'html' }
-  ];
+  function mirror(url) {
+    // allorigins caches ~5 min per URL; the throwaway param keeps 90s polls live
+    return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url) + '&_=' + Date.now();
+  }
+
+  function mirror2(url) {
+    return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url);
+  }
+
+  // Order matters: cheapest/cleanest first. Direct fsddb JSON fails CORS
+  // today (no ACAO headers) but costs one fast failed request; the page
+  // via allorigins is the workhorse — it embeds the full snapshot JSON.
+  // Both mirrors intermittently answer 522 when fsddb is under race-day
+  // load, which is why the chain is deep and the fallback snapshot exists.
+  function sources() {
+    return [
+      { url: 'https://fsddb.com' + snapshotPath, kind: 'json' },
+      { url: mirror(TRACKER_PAGE), kind: 'html' },
+      { url: mirror('https://fsddb.com' + snapshotPath), kind: 'json' },
+      { url: mirror2(TRACKER_PAGE), kind: 'html' },
+      { url: mirror2('https://fsddb.com' + snapshotPath), kind: 'json' }
+    ];
+  }
 
   var els = {
     status: document.getElementById('tm-status'),
@@ -60,7 +102,7 @@
     total: document.getElementById('tm-total'),
     elapsed: document.getElementById('tm-elapsed'),
     speed: document.getElementById('tm-speed'),
-    interventions: document.getElementById('tm-interventions'),
+    manual: document.getElementById('tm-manual'),
     bar: document.getElementById('tm-bar'),
     barWrap: document.getElementById('tm-bar-wrap'),
     pct: document.getElementById('tm-pct'),
@@ -93,11 +135,10 @@
   }
 
   /* ----------------------------------------------------------
-     Parsing — deliberately fuzzy. We accept any of:
-     - JSON with mile/distance/start/intervention-ish keys
-     - Next.js __NEXT_DATA__ payloads embedded in the page
-     - visible-text patterns like "1,234.5 / 2,732.4 mi",
-       "2d 20h 14m", "0 interventions"
+     Parsing. Primary: the exact snapshot schema above. Backup:
+     fuzzy key matching (in case fsddb renames), then the page's
+     visible text ("78 of 2,850 planned miles", "Time to beat
+     49:55:57", "Race clock 1:35:09").
      ---------------------------------------------------------- */
   function num(v) {
     if (typeof v === 'number' && isFinite(v)) return v;
@@ -109,19 +150,21 @@
   }
 
   function parseDate(v) {
-    if (typeof v === 'number' && v > 1e12 && v < 4e12) return v;            // ms epoch
-    if (typeof v === 'number' && v > 1e9 && v < 4e9) return v * 1000;       // s epoch
     if (typeof v === 'string' && /\d{4}-\d{2}-\d{2}T/.test(v)) {
       var t = Date.parse(v);
       if (isFinite(t)) return t;
     }
+    if (typeof v === 'number' && v > 1e12 && v < 4e12) return v;            // ms epoch
+    if (typeof v === 'number' && v > 1e9 && v < 4e9) return v * 1000;       // s epoch
     return null;
   }
 
   // Flatten an object tree into [lowercasedKeyPath, primitiveValue] pairs
   function flatten(obj, out, prefix, depth) {
-    if (obj == null || depth > 14 || out.length > 4000) return;
+    if (obj == null || depth > 10 || out.length > 2000) return;
     if (Array.isArray(obj)) {
+      // Never descend into route_line-sized arrays of coordinates
+      if (obj.length > 50) return;
       for (var i = 0; i < obj.length; i++) flatten(obj[i], out, prefix, depth + 1);
       return;
     }
@@ -130,8 +173,7 @@
         if (!Object.prototype.hasOwnProperty.call(obj, k)) continue;
         var v = obj[k];
         var path = prefix + k.toLowerCase();
-        if (v == null) continue;
-        if (typeof v === 'object') flatten(v, out, path + '.', depth + 1);
+        if (typeof v === 'object' && v !== null) flatten(v, out, path + '.', depth + 1);
         else out.push([path, v]);
       }
     }
@@ -141,39 +183,86 @@
     for (var i = 0; i < pairs.length; i++) {
       if (!keyRe.test(pairs[i][0])) continue;
       var v = valueFn(pairs[i][1]);
-      if (v !== null && v >= lo && v <= hi) return v;
+      if (v !== null && (lo === undefined || (v >= lo && v <= hi))) return v;
     }
     return null;
   }
 
   function fromJsonTree(tree) {
+    if (!tree || typeof tree !== 'object') return null;
     var pairs = [];
     flatten(tree, pairs, '', 0);
     if (!pairs.length) return null;
 
     var out = {};
-    out.totalMiles = pick(pairs, /(total|route|goal|target|planned)[^.]*(mile|distance|length)|(mile|distance|length)[^.]*(total|route|goal|target)/, num, 300, 8000);
-    out.miles = pick(pairs, /(driven|completed|current|progress|fsd|traveled|travelled)[^.]*(mile|distance)|(mile|distance)[^.]*(driven|completed|current|progress|traveled|travelled)|(^|\.)miles?$/, num, 0.1, 8000);
-    out.startTime = pick(pairs, /start|depart|began|begin/, parseDate, Date.parse('2024-01-01'), Date.now() + 864e5);
-    out.endTime = pick(pairs, /(end|finish|complete)[^.]*(time|at|date)/, parseDate, Date.parse('2024-01-01'), Date.now() + 864e5);
-    out.interventions = pick(pairs, /interven|disengage/, num, 0, 999);
-    out.elapsedMs = null;
-    var elapsedH = pick(pairs, /elapsed|duration/, num, 0.01, 500);
-    if (elapsedH !== null) out.elapsedMs = elapsedH * 3600 * 1000;
+    // Route length: planned_total_miles. "total_miles" alone is the miles
+    // DRIVEN so far on fsddb — never treat it as the route length.
+    out.totalMiles = pick(pairs, /planned_total_miles$|planned[^.]*mile|route[^.]*mile/, num, 300, 8000);
+    // Miles completed along the route (odometer_miles and miles_to_arrival
+    // must not match).
+    out.miles = pick(pairs, /progress_miles$/, num, 0, 8000);
+    if (out.miles === null) out.miles = pick(pairs, /self_driving_miles$/, num, 0, 8000);
+    if (out.miles === null) out.miles = pick(pairs, /(^|\.)total_miles$/, num, 0, 8000);
+    out.manualMiles = pick(pairs, /manual_miles$|manual[^.]*(mile|distance)/, num, 0, 8000);
+    out.startTime = pick(pairs, /race\.started_at$/, parseDate) ||
+                    pick(pairs, /(^|\.)started_at$|start|depart/, parseDate);
+    out.endTime = pick(pairs, /race\.ended_at$/, parseDate) ||
+                  pick(pairs, /(^|\.)ended_at$|(end|finish|complete)[^.]*(time|at|date)/, parseDate);
+    out.finalSeconds = pick(pairs, /final_seconds$/, num, 60, 3e6);
+    out.recordSeconds = pick(pairs, /time_to_beat_seconds$|record[^.]*seconds/, num, 3600, 3e6);
+    out.status = pick(pairs, /(^|\.)status$/, function (v) {
+      return typeof v === 'string' ? v.toLowerCase() : null;
+    });
+    out.beatRecord = null;
+    for (var i = 0; i < pairs.length; i++) {
+      if (/beat_record$/.test(pairs[i][0]) && typeof pairs[i][1] === 'boolean') {
+        out.beatRecord = pairs[i][1];
+        break;
+      }
+    }
     return (out.miles !== null || out.totalMiles !== null || out.startTime !== null) ? out : null;
   }
 
+  // Extract the balanced JSON object starting at html[from] (respects strings)
+  function jsonAt(html, from) {
+    var depth = 0, inStr = false, esc = false;
+    for (var i = from; i < html.length && i < from + 500000; i++) {
+      var c = html.charAt(i);
+      if (esc) { esc = false; continue; }
+      if (inStr) {
+        if (c === '\\') esc = true;
+        else if (c === '"') inStr = false;
+        continue;
+      }
+      if (c === '"') inStr = true;
+      else if (c === '{') depth++;
+      else if (c === '}') {
+        depth--;
+        if (depth === 0) {
+          try { return JSON.parse(html.slice(from, i + 1)); } catch (e) { return null; }
+        }
+      }
+    }
+    return null;
+  }
+
+  function hms(h, m, s) {
+    return ((num(h) || 0) * 3600 + (num(m) || 0) * 60 + (num(s) || 0)) * 1000;
+  }
+
   function fromHtml(html) {
-    // 1) Embedded Next.js/JSON payloads
-    var m = html.match(/<script[^>]*id=["']__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/);
+    // Freshen the snapshot path (its ?client= token rotates per race)
+    var su = html.match(/data-snapshot-url="([^"]+)"/);
+    if (su && su[1].indexOf('/trackers/') === 0) snapshotPath = su[1];
+
+    // 1) The embedded `let snapshot = {...}` JSON — the full data set
+    var m = html.match(/(?:let|var|const)\s+snapshot\s*=\s*\{/);
     if (m) {
-      try {
-        var viaJson = fromJsonTree(JSON.parse(m[1]));
-        if (viaJson && viaJson.miles !== null) return viaJson;
-      } catch (e) { /* fall through to text scraping */ }
+      var viaJson = fromJsonTree(jsonAt(html, m.index + m[0].length - 1));
+      if (viaJson && viaJson.miles !== null) return viaJson;
     }
 
-    // 2) Visible-text scraping
+    // 2) Visible-text scraping of the real tracker markup
     var text = html
       .replace(/<script[\s\S]*?<\/script>/gi, ' ')
       .replace(/<style[\s\S]*?<\/style>/gi, ' ')
@@ -181,43 +270,28 @@
       .replace(/&nbsp;/g, ' ')
       .replace(/\s+/g, ' ');
 
-    var out = { miles: null, totalMiles: null, startTime: null, endTime: null, interventions: null, elapsedMs: null };
+    var out = { miles: null, totalMiles: null, manualMiles: null, startTime: null,
+                endTime: null, finalSeconds: null, recordSeconds: null, status: null, beatRecord: null };
 
-    // "1,234.5 / 2,732.4 mi" or "1,234.5 of 2,732.4 miles"
-    var frac = text.match(/([\d,]+(?:\.\d+)?)\s*(?:\/|of|out of)\s*([\d,]+(?:\.\d+)?)\s*(?:mi\b|miles)/i);
+    // "78 of 2,850 planned miles"
+    var frac = text.match(/([\d,]+(?:\.\d+)?)\s*of\s*([\d,]+(?:\.\d+)?)\s*planned\s*miles/i);
+    if (!frac) frac = text.match(/([\d,]+(?:\.\d+)?)\s*(?:\/|of|out of)\s*([\d,]+(?:\.\d+)?)\s*(?:mi\b|miles)/i);
     if (frac) {
       var a = num(frac[1]), b = num(frac[2]);
       if (a !== null && b !== null && b >= a && b >= 300) { out.miles = a; out.totalMiles = b; }
     }
 
-    // Standalone totals if no fraction found: take the two largest "N mi" values
-    if (out.miles === null) {
-      var miRe = /([\d,]+(?:\.\d+)?)\s*(?:mi\b|miles)/gi, hit, vals = [];
-      while ((hit = miRe.exec(text)) !== null) {
-        var v = num(hit[1]);
-        if (v !== null && v > 1) vals.push(v);
-      }
-      if (vals.length >= 2) {
-        vals.sort(function (x, y) { return y - x; });
-        if (vals[0] >= 300 && vals[0] >= vals[1]) { out.totalMiles = vals[0]; out.miles = vals[1]; }
-      }
-    }
-
-    // "2d 20h 14m" | "68h 12m" elapsed
-    var dur = text.match(/(?:(\d+)\s*d(?:ays?)?\s*)?(\d+)\s*h(?:ou?rs?)?\s*(?:(\d+)\s*m(?:in(?:ute)?s?)?)?/i);
-    if (dur && (dur[1] || num(dur[2]) !== null)) {
-      var ms = ((num(dur[1]) || 0) * 24 + (num(dur[2]) || 0)) * 3600 * 1000 + (num(dur[3]) || 0) * 60 * 1000;
-      if (ms > 0 && ms < 500 * 3600 * 1000) out.elapsedMs = ms;
-    }
-
-    var iv = text.match(/(\d+)\s*interventions?/i);
-    if (iv) out.interventions = num(iv[1]);
+    // "Time to beat 49:55:57" and "Race clock 1:35:09"
+    var beat = text.match(/time\s*to\s*beat\s*(\d+):(\d{2}):(\d{2})/i);
+    if (beat) out.recordSeconds = hms(beat[1], beat[2], beat[3]) / 1000;
+    var clock = text.match(/race\s*clock\s*(\d+):(\d{2}):(\d{2})/i);
+    if (clock) out.elapsedMs = hms(clock[1], clock[2], clock[3]);
 
     // Labeled start timestamps in the raw HTML (JSON-ish attributes)
-    var st = html.match(/"(?:start|depart)[a-z_]*"\s*:\s*"?(\d{10,13}|\d{4}-\d{2}-\d{2}T[\d:.+Zz-]+)"?/i);
-    if (st) out.startTime = parseDate(/^\d+$/.test(st[1]) ? Number(st[1]) : st[1]);
+    var st = html.match(/"started_at"\s*:\s*"(\d{4}-\d{2}-\d{2}T[^"]+)"/i);
+    if (st) out.startTime = parseDate(st[1]);
 
-    return (out.miles !== null || out.elapsedMs !== null) ? out : null;
+    return (out.miles !== null || out.elapsedMs || out.startTime !== null) ? out : null;
   }
 
   /* ----------------------------------------------------------
@@ -227,14 +301,23 @@
     var d = {
       miles: (parsed && parsed.miles !== null && parsed.miles !== undefined) ? parsed.miles : FALLBACK.miles,
       totalMiles: (parsed && parsed.totalMiles) || FALLBACK.totalMiles,
-      startTime: (parsed && parsed.startTime) || null,
+      manualMiles: (parsed && parsed.manualMiles !== null && parsed.manualMiles !== undefined)
+        ? parsed.manualMiles : FALLBACK.manualMiles,
+      startTime: (parsed && parsed.startTime) || FALLBACK.startTime,
       endTime: (parsed && parsed.endTime) || null,
-      interventions: (parsed && parsed.interventions !== null && parsed.interventions !== undefined)
-        ? parsed.interventions : FALLBACK.interventions,
-      elapsedMs: (parsed && parsed.elapsedMs) || null
+      elapsedMs: (parsed && parsed.elapsedMs) || null,
+      beatRecord: (parsed && typeof parsed.beatRecord === 'boolean') ? parsed.beatRecord : null
     };
+    if (parsed && parsed.recordSeconds) recordMs = parsed.recordSeconds * 1000;
     if (d.totalMiles < d.miles) d.totalMiles = d.miles;
-    d.finished = d.miles >= d.totalMiles - 1;
+
+    d.finished = !!(d.endTime ||
+      (parsed && parsed.finalSeconds) ||
+      d.beatRecord !== null ||
+      (parsed && parsed.status && parsed.status !== 'active' && parsed.status !== 'scheduled') ||
+      d.miles >= d.totalMiles - 1);
+
+    if (parsed && parsed.finalSeconds) d.elapsedMs = parsed.finalSeconds * 1000;
     if (d.elapsedMs === null) {
       if (d.startTime && d.endTime && d.endTime > d.startTime) d.elapsedMs = d.endTime - d.startTime;
       else if (d.startTime && !d.finished) d.elapsedMs = Math.max(0, Date.now() - d.startTime);
@@ -243,9 +326,14 @@
     return d;
   }
 
+  function isTicking(d) {
+    // Only a live (non-snapshot) run with a known start keeps counting
+    // between polls — a stale snapshot must never pretend to be a clock.
+    return !d.finished && !!d.startTime && !isSnapshot;
+  }
+
   function elapsedNow(d) {
-    // A live run with a known start keeps counting between polls
-    if (!d.finished && d.startTime) return Math.max(0, Date.now() - d.startTime);
+    if (isTicking(d)) return Math.max(0, Date.now() - d.startTime);
     return d.elapsedMs;
   }
 
@@ -282,7 +370,7 @@
     if (!data) return;
     var el = elapsedNow(data);
     var proj = projectedMs(data);
-    var ticking = !data.finished && !!data.startTime;
+    var ticking = isTicking(data);
     var pct = data.totalMiles > 0 ? Math.min(100, (data.miles / data.totalMiles) * 100) : 0;
     var hours = el / 3600000;
 
@@ -290,15 +378,15 @@
     if (els.total) els.total.textContent = fmtMiles(data.totalMiles);
     if (els.elapsed) els.elapsed.textContent = fmtDur(el, ticking);
     if (els.speed) els.speed.textContent = hours > 0.05 ? (data.miles / hours).toFixed(1) : '—';
-    if (els.interventions) els.interventions.textContent = String(data.interventions);
+    if (els.manual) els.manual.textContent = data.manualMiles === null ? '—' : fmtMiles(data.manualMiles);
     if (els.projected) els.projected.textContent = fmtDur(proj, false);
     if (els.projectedLabel) {
       els.projectedLabel.textContent = data.finished ? 'Final time — run complete' : 'Projected total time';
     }
 
     // Race vs the record: negative delta = on pace to beat it
-    if (els.record) els.record.textContent = fmtDur(RECORD_MS, false);
-    var diff = (proj !== null && isFinite(proj)) ? proj - RECORD_MS : null;
+    if (els.record) els.record.textContent = fmtDur(recordMs, false);
+    var diff = (proj !== null && isFinite(proj)) ? proj - recordMs : null;
     if (els.diff) {
       els.diff.textContent = diff === null ? '—' : (diff < 0 ? '−' : '+') + fmtDur(diff, false);
     }
@@ -319,7 +407,7 @@
     if (els.note) {
       var ago = fetchedAt ? Math.max(0, Math.round((Date.now() - fetchedAt) / 1000)) : null;
       els.note.textContent = isSnapshot
-        ? 'Live feed unreachable right now — showing the last verified result. Projection = elapsed time ÷ share of route driven.'
+        ? 'Live feed unreachable right now — showing the last verified state. Projection = elapsed time ÷ share of route driven.'
         : 'Pulled from fsddb.com' + (ago !== null ? ' · updated ' + ago + 's ago' : '') +
           ' · projection = elapsed time ÷ share of route driven.';
     }
@@ -332,9 +420,9 @@
   /* ----------------------------------------------------------
      Poll loop — walk the source list until one parses
      ---------------------------------------------------------- */
-  function tryNext(i) {
-    if (i >= SOURCES.length) return Promise.resolve(null);
-    var src = SOURCES[i];
+  function tryNext(list, i) {
+    if (i >= list.length) return Promise.resolve(null);
+    var src = list[i];
     return fetchWithTimeout(src.url).then(function (body) {
       var parsed = null;
       if (src.kind === 'json') {
@@ -342,14 +430,14 @@
       } else {
         parsed = fromHtml(body);
       }
-      return parsed || tryNext(i + 1);
+      return parsed || tryNext(list, i + 1);
     }, function () {
-      return tryNext(i + 1);
+      return tryNext(list, i + 1);
     });
   }
 
   function refresh() {
-    tryNext(0).then(function (parsed) {
+    tryNext(sources(), 0).then(function (parsed) {
       if (parsed) {
         data = merge(parsed);
         isSnapshot = false;

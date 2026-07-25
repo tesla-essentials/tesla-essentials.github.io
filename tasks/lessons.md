@@ -65,6 +65,22 @@ de-model-ed.** Merged cards inherited reviews like "Fits the new Model Y…" tha
 contradicted the second vehicle chip. Fitment lives in chips + `data-fits`;
 review copy stays model-neutral.
 
+**Guessed API shapes for third-party sites are usually wrong — probe the real
+thing before shipping parsers.** The cannonball board's first version guessed
+`/api/trackers/...` (404s), `__NEXT_DATA__` (fsddb is Rails, not Next), and
+mapped `total_miles` to route length (on fsddb it's miles *driven*; the route
+length is `public_route.planned_total_miles`). When the dev sandbox can't reach
+the site, a throwaway `workflow_dispatch`/push-triggered GitHub Actions job that
+curls the page and prints headers + body is a reliable way to see the truth —
+runners have open egress. Delete the workflow after use.
+
+**CORS mirrors are a spectrum, not a commodity.** fsddb.com serves no
+`Access-Control-Allow-Origin` at all; corsproxy.io's free tier rejects
+production origins (only localhost works — it passed local tests and would have
+failed in prod); allorigins works but caches ~5 min (cache-bust with a
+throwaway param) and, like codetabs, intermittently 522s when the upstream is
+under load. Chain at least two mirrors and keep a hardcoded fallback.
+
 ## Future Entries
 
 (Add new lessons here as work progresses on this repo)
