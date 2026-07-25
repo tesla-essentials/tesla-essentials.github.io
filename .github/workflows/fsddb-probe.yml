@@ -1,0 +1,47 @@
+# TEMPORARY probe — dispatched once from a Claude Code session to inspect
+# the public fsddb.com tracker page structure (the dev sandbox has no
+# general internet egress). Deleted after use.
+name: fsddb-probe
+on:
+  workflow_dispatch:
+    inputs:
+      extra_urls:
+        description: 'Optional extra URLs to probe (space-separated)'
+        required: false
+        default: ''
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Probe fsddb endpoints
+        run: |
+          set +e
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+
+          probe () {
+            url="$1"; shift
+            echo "===================================================================="
+            echo "== PROBE: $url"
+            echo "===================================================================="
+            curl -sS -m 30 -A "$UA" -D /tmp/h.txt -o /tmp/b.txt "$@" "$url"
+            rc=$?
+            echo "-- curl exit: $rc"
+            echo "-- HEADERS:"
+            cat /tmp/h.txt
+            echo "-- BODY BYTES: $(wc -c < /tmp/b.txt)"
+            echo "-- BODY (first 120000 bytes):"
+            head -c 120000 /tmp/b.txt
+            echo ""
+            echo "-- END BODY"
+          }
+
+          probe "https://fsddb.com/trackers/FSDCannonball"
+          probe "https://fsddb.com/trackers/FSDCannonball" -H "Origin: https://tesla-essentials.com" -H "Accept: text/html"
+          probe "https://fsddb.com/trackers/FSDCannonball.json" -H "Accept: application/json"
+          probe "https://fsddb.com/api/trackers/FSDCannonball" -H "Accept: application/json"
+          probe "https://fsddb.com/trackers"
+          for u in ${{ inputs.extra_urls }}; do
+            probe "$u" -H "Origin: https://tesla-essentials.com"
+          done
