@@ -12,67 +12,61 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Probe fsddb snapshot endpoint + page structure
+      - name: Verify mirror chain + capture fixture snapshot
         shell: python3 {0}
         run: |
-          import json, re, urllib.request
+          import json, re, urllib.request, urllib.parse
 
           UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
 
           def get(url, headers=None):
               req = urllib.request.Request(url, headers=dict({'User-Agent': UA}, **(headers or {})))
               try:
-                  with urllib.request.urlopen(req, timeout=30) as r:
+                  with urllib.request.urlopen(req, timeout=40) as r:
                       return r.status, dict(r.headers), r.read()
               except urllib.error.HTTPError as e:
                   return e.code, dict(e.headers), e.read()[:2000]
               except Exception as e:
                   return None, {}, str(e).encode()
 
-          def trunc(o, n=6):
-              if isinstance(o, list):
-                  out = [trunc(x, n) for x in o[:n]]
-                  if len(o) > n: out.append('...(%d items total)' % len(o))
-                  return out
-              if isinstance(o, dict):
-                  return {k: trunc(v, n) for k, v in o.items()}
-              return o
+          SNAP = 'https://fsddb.com/trackers/fsdcannonball/snapshot?client=20260724-race-1'
+          PAGE = 'https://fsddb.com/trackers/FSDCannonball'
+          ORIG = {'Origin': 'https://tesla-essentials.com'}
 
-          ORIG = {'Origin': 'https://tesla-essentials.com', 'Accept': 'application/json'}
+          def mirror(u):
+              return 'https://api.allorigins.win/raw?url=' + urllib.parse.quote(u, safe='') + '&_=1234567890'
 
-          for label, url, hdrs in [
-              ('SNAPSHOT+ORIGIN', 'https://fsddb.com/trackers/fsdcannonball/snapshot?client=20260724-race-1', ORIG),
-              ('LIVE_LOCATION', 'https://fsddb.com/trackers/fsdcannonball/live_location', ORIG),
-              ('SNAPSHOT-via-allorigins', 'https://api.allorigins.win/raw?url=' + urllib.request.quote('https://fsddb.com/trackers/fsdcannonball/snapshot', safe=''), {'Origin': 'https://tesla-essentials.com'}),
-              ('SNAPSHOT-via-corsproxy', 'https://corsproxy.io/?url=' + urllib.request.quote('https://fsddb.com/trackers/fsdcannonball/snapshot', safe=''), {'Origin': 'https://tesla-essentials.com'}),
-          ]:
-              st, h, b = get(url, hdrs)
-              print('=' * 70)
-              print('== %s %s' % (label, url))
-              print('-- status:', st)
-              print('-- headers:', json.dumps({k.lower(): v for k, v in h.items()}))
-              try:
-                  print('-- json (lists truncated):')
-                  print(json.dumps(trunc(json.loads(b)), indent=1)[:40000])
-              except Exception:
-                  print('-- body (first 3000):', b[:3000])
-
-          # Page markup with scripts/styles/route JSON stripped, so the part
-          # of the 332KB page beyond the giant blobs is visible.
-          st, h, b = get('https://fsddb.com/trackers/FSDCannonball')
+          # 1) allorigins page fetch (the workhorse source)
+          st, h, b = get(mirror(PAGE), ORIG)
           html = b.decode('utf-8', 'replace')
-          print('=' * 70)
-          print('== PAGE status', st, 'bytes', len(html))
-          stripped = re.sub(r'<script[\s\S]*?</script>', '[SCRIPT]', html)
-          stripped = re.sub(r'<style[\s\S]*?</style>', '[STYLE]', stripped)
-          stripped = re.sub(r'\n\s*\n+', '\n', stripped)
-          print('-- MARKUP (scripts/styles stripped):')
-          print(stripped[:60000])
-          print('-- END MARKUP')
-          # Any snapshot-adjacent script code (poll interval, ws) minus coordinates
-          for m in re.finditer(r'<script[^>]*>([\s\S]*?)</script>', html):
-              s = m.group(1)
-              if 'snapshot' in s or 'race' in s:
-                  s = re.sub(r'"coordinates":\[[^\]]*\]', '"coordinates":[...]', s)
-                  print('-- SCRIPT with snapshot/race (coords stripped), %d chars:' % len(s))
-                  print(s[:80000])
+          print('== MIRROR PAGE status', st, 'bytes', len(html),
+                'has-snapshot:', 'let snapshot' in html,
+                'has-snapshot-url:', 'data-snapshot-url' in html,
+                'acao:', h.get('Access-Control-Allow-Origin'))
+
+          # 2) allorigins snapshot WITH client token
+          st, h, b = get(mirror(SNAP), ORIG)
+          print('== MIRROR SNAPSHOT status', st, 'bytes', len(b), 'acao:', h.get('Access-Control-Allow-Origin'))
+          try:
+              keys = list(json.loads(b).keys())
+              print('   top-level keys:', keys)
+          except Exception as e:
+              print('   body head:', b[:300])
+
+          # 3) codetabs as a possible second mirror
+          st, h, b = get('https://api.codetabs.com/v1/proxy?quest=' + urllib.parse.quote(SNAP, safe=''), ORIG)
+          print('== CODETABS SNAPSHOT status', st, 'bytes', len(b), 'acao:', h.get('Access-Control-Allow-Origin'))
+          print('   body head:', b[:200])
+
+          # 4) fresh direct snapshot -> full fixture with route coords pruned
+          st, h, b = get(SNAP, {'Accept': 'application/json'})
+          data = json.loads(b)
+          def prune(o):
+              if isinstance(o, dict):
+                  return {k: (dict(o[k], coordinates=o[k].get('coordinates', [])[:3]) if k == 'route_line' and isinstance(o[k], dict) else prune(o[k])) for k in o}
+              if isinstance(o, list):
+                  return [prune(x) for x in o]
+              return o
+          print('== FIXTURE-BEGIN')
+          print(json.dumps(prune(data)))
+          print('== FIXTURE-END')
