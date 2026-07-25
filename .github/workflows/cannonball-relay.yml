@@ -3,12 +3,16 @@
 # fsddb.com serves no CORS headers and the public CORS mirrors
 # (allorigins, codetabs) proved unreliable under race-day load, so the
 # browser can't dependably read the tracker cross-origin. This workflow
-# fetches the snapshot server-side every 10 minutes and force-pushes a
-# pruned copy (~2 KB, single-commit branch) to `cannonball-data`;
-# js/cannonball.js reads it via raw.githubusercontent.com, which does
-# send Access-Control-Allow-Origin. The elapsed clock ticks client-side
-# from race.started_at, so ~10 min of staleness only affects the mile
-# counter (~0.3% projection error at highway speed).
+# keeps a pruned snapshot (~2 KB, single-commit branch `cannonball-data`)
+# fresh; js/cannonball.js reads it via raw.githubusercontent.com, which
+# does send Access-Control-Allow-Origin.
+#
+# Freshness: cron fires every 5 minutes (GitHub's minimum) and each run
+# LOOPS for ~4.5 minutes, polling fsddb every ~45 s and pushing only
+# when the data changed — so the relay lags fsddb by ~1 minute even
+# when the cron scheduler jitters. Volatile fields the board never
+# reads (live_location, route polylines, server_now) are pruned so
+# "changed" means the counters moved, not the GPS dot.
 #
 # Self-quiescing: when the snapshot stops changing (run over), nothing
 # is pushed. Safe to delete this workflow + the cannonball-data branch
@@ -16,7 +20,7 @@
 name: cannonball-relay
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
   push:
     branches: ['main', 'claude/fsd-cannonball-time-calc-iyshs7']
@@ -32,65 +36,83 @@ concurrency:
 jobs:
   relay:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 6
     steps:
-      - name: Fetch snapshot and publish to cannonball-data
+      - name: Poll snapshot and publish changes to cannonball-data
         shell: python3 {0}
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
         run: |
-          import json, os, re, subprocess, urllib.request
+          import json, os, re, subprocess, time, urllib.request
 
           UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
+          DEADLINE = time.time() + 265   # ~4.5 min; next cron covers the rest
+          POLL_S = 45
 
           def get(url, accept=None):
               req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept': accept or '*/*'})
-              with urllib.request.urlopen(req, timeout=30) as r:
+              with urllib.request.urlopen(req, timeout=25) as r:
                   return r.read()
-
-          # The snapshot ?client= token rotates per race — always read the
-          # current one off the tracker page rather than hardcoding it.
-          page = get('https://fsddb.com/trackers/FSDCannonball').decode('utf-8', 'replace')
-          m = re.search(r'data-snapshot-url="(/trackers/[^"]+)"', page)
-          path = m.group(1) if m else '/trackers/fsdcannonball/snapshot'
-          data = json.loads(get('https://fsddb.com' + path, 'application/json'))
-          if 'error' in data and 'race' not in data:
-              print('snapshot answered an error, keeping previous data:', data)
-              raise SystemExit(0)
 
           def prune(o):
               if isinstance(o, dict):
-                  return {k: ([] if k == 'coordinates' else prune(v))
-                          for k, v in o.items() if k not in ('route_line', 'public_trip_paths')}
+                  return {k: prune(v) for k, v in o.items()
+                          if k not in ('route_line', 'public_trip_paths', 'live_location', 'server_now')}
               if isinstance(o, list):
                   return [prune(x) for x in o]
               return o
-          data = prune(data)
-          data.pop('server_now', None)          # changes every call; breaks change detection
-          body = json.dumps(data, sort_keys=True, separators=(',', ':')) + '\n'
 
-          # Skip the push when nothing changed (e.g. the run is over).
+          def publish(body):
+              subprocess.run(['rm', '-rf', '/tmp/relay'], check=True)
+              os.makedirs('/tmp/relay')
+              os.chdir('/tmp/relay')
+              open('cannonball.json', 'w').write(body)
+              for a in (['git', 'init', '-q', '-b', 'cannonball-data'],
+                        ['git', 'config', 'user.name', 'cannonball-relay'],
+                        ['git', 'config', 'user.email', 'actions@users.noreply.github.com'],
+                        ['git', 'add', 'cannonball.json'],
+                        ['git', 'commit', '-q', '-m', 'cannonball snapshot'],
+                        ['git', 'push', '-q', '--force',
+                         'https://x-access-token:%s@github.com/%s.git' % (os.environ['GH_TOKEN'], os.environ['REPO']),
+                         'cannonball-data']):
+                  subprocess.run(a, check=True)
+
+          # The snapshot ?client= token rotates per race — read the current
+          # one off the tracker page once per run.
+          path = '/trackers/fsdcannonball/snapshot'
           try:
-              current = get('https://raw.githubusercontent.com/%s/cannonball-data/cannonball.json' % os.environ['REPO']).decode()
-              if current == body:
-                  print('unchanged, skipping push')
-                  raise SystemExit(0)
-          except SystemExit:
-              raise
+              page = get('https://fsddb.com/trackers/FSDCannonball').decode('utf-8', 'replace')
+              m = re.search(r'data-snapshot-url="(/trackers/[^"]+)"', page)
+              if m:
+                  path = m.group(1)
+          except Exception as e:
+              print('page fetch failed, using default snapshot path:', e)
+
+          last = None
+          try:
+              last = get('https://raw.githubusercontent.com/%s/cannonball-data/cannonball.json?_=%d'
+                         % (os.environ['REPO'], time.time())).decode()
           except Exception:
               pass
 
-          os.makedirs('/tmp/relay', exist_ok=True)
-          os.chdir('/tmp/relay')
-          open('cannonball.json', 'w').write(body)
-          run = lambda *a: subprocess.run(a, check=True)
-          run('git', 'init', '-q', '-b', 'cannonball-data')
-          run('git', 'config', 'user.name', 'cannonball-relay')
-          run('git', 'config', 'user.email', 'actions@users.noreply.github.com')
-          run('git', 'add', 'cannonball.json')
-          run('git', 'commit', '-q', '-m', 'cannonball snapshot')
-          run('git', 'push', '-q', '--force',
-              'https://x-access-token:%s@github.com/%s.git' % (os.environ['GH_TOKEN'], os.environ['REPO']),
-              'cannonball-data')
-          print('pushed', len(body), 'bytes:', body[:200])
+          pushes = 0
+          while True:
+              try:
+                  data = json.loads(get('https://fsddb.com' + path, 'application/json'))
+                  if 'race' in data or 'public_route' in data:
+                      body = json.dumps(prune(data), sort_keys=True, separators=(',', ':')) + '\n'
+                      if body != last:
+                          publish(body)
+                          last = body
+                          pushes += 1
+                          print('pushed update; progress_miles =',
+                                (data.get('public_route') or {}).get('progress_miles'))
+                  else:
+                      print('snapshot answered an error, keeping previous data:', data)
+              except Exception as e:
+                  print('poll failed:', e)
+              if time.time() + POLL_S > DEADLINE:
+                  break
+              time.sleep(POLL_S)
+          print('run done,', pushes, 'push(es)')

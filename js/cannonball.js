@@ -40,7 +40,7 @@
   if (!root || typeof window.fetch !== 'function') return;
 
   var TRACKER_PAGE = 'https://fsddb.com/trackers/FSDCannonball';
-  var REFRESH_MS = 90000;   // re-poll the tracker every 90s
+  var REFRESH_MS = 60000;   // re-poll the sources every 60s
   var FETCH_TIMEOUT_MS = 9000;
 
   // Uncertainty on the projection. The hours already driven are fact;
@@ -77,15 +77,15 @@
     finished: false
   };
 
-  // Our own relay: .github/workflows/cannonball-relay.yml copies the
-  // snapshot to the cannonball-data branch every 10 min, and raw.github
-  // serves it WITH CORS headers — unlike fsddb itself. ~10 min stale at
-  // worst, but the elapsed clock ticks locally so only the mile counter
-  // lags (~0.3% projection error at highway speed).
+  // Our own relay: .github/workflows/cannonball-relay.yml polls fsddb
+  // every ~45 s (looping inside a 5-min cron) and pushes changes to the
+  // cannonball-data branch; raw.github serves it WITH CORS headers —
+  // unlike fsddb itself. Typical lag ~1 min, and the elapsed clock
+  // ticks locally anyway so only the mile counter lags at all.
   var RELAY = 'https://raw.githubusercontent.com/tesla-essentials/tesla-essentials.github.io/cannonball-data/cannonball.json';
 
   function mirror(url) {
-    // allorigins caches ~5 min per URL; the throwaway param keeps 90s polls live
+    // allorigins caches ~5 min per URL; the throwaway param keeps polls live
     return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url) + '&_=' + Date.now();
   }
 

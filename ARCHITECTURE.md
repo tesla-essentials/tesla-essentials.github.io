@@ -157,15 +157,19 @@ hardcoded record constant. fsddb serves **no CORS headers**, so cross-origin
 reads go through `api.allorigins.win` (corsproxy.io blocks production origins
 on its free tier — don't re-add it). During the July 2026 race both public
 mirrors (allorigins, codetabs) sat on 520/522 errors for hours, so the site
-runs its own relay: `.github/workflows/cannonball-relay.yml` copies a pruned
-snapshot (~2 KB, no route polyline) to the single-commit `cannonball-data`
-branch every 10 minutes, and the browser reads it from
-raw.githubusercontent.com — which, unlike fsddb, serves CORS headers. The
-relay skips the push when the data stops changing, so it goes quiet once the
-run ends (delete the workflow + branch when the board is retired). The source
-chain is: direct snapshot JSON (only useful if fsddb ever enables CORS) → the
-relay JSON (dependable, ≤10 min stale — only the mile counter lags; the clock
-ticks client-side) → the page via allorigins (fresher when alive; also
+runs its own relay: `.github/workflows/cannonball-relay.yml` fires on a 5-min
+cron and each run *loops* for ~4.5 minutes, polling fsddb every ~45 s and
+force-pushing a pruned snapshot (~2 KB — no route polyline, no live_location)
+to the single-commit `cannonball-data` branch whenever the counters actually
+change; the browser reads it from raw.githubusercontent.com — which, unlike
+fsddb, serves CORS headers. Net lag is ~1 min (fsddb's own counter cadence +
+one poll + one client refresh at 60 s), immune to GitHub cron jitter. Note
+fsddb intentionally delays public *location* data by 15 min
+(`location_delay_minutes`) — the mile counters the board uses are
+near-real-time. The relay skips pushes when nothing changed, so it goes
+quiet once the run ends (delete the workflow + branch when the board is
+retired). The source chain is: direct snapshot JSON (only useful if fsddb
+ever enables CORS) → the relay JSON → the page via allorigins (also
 refreshes the `?client=` token) → the snapshot via allorigins → the page via
 codetabs. Parsing prefers exact key paths, then fuzzy key
 matching, then visible-text patterns (`"78 of 2,850 planned miles"`,
