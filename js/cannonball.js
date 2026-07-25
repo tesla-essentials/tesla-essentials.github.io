@@ -43,6 +43,14 @@
   var REFRESH_MS = 90000;   // re-poll the tracker every 90s
   var FETCH_TIMEOUT_MS = 9000;
 
+  // Uncertainty on the projection. The hours already driven are fact;
+  // only the remaining time is an estimate, so the ± band is a share of
+  // the time still to drive: ±10% covers the pace swing between open
+  // interstate and charging-heavy stretches, and shrinks to zero at the
+  // finish line. Heuristic, not statistics — but honest about which
+  // part of the number is guesswork.
+  var BAND_SHARE = 0.10;
+
   // Snapshot JSON path. The ?client= token rotates per race; this is the
   // value observed July 2026, and refresh() re-scrapes the live one from
   // the page's data-snapshot-url whenever the page is the source that wins.
@@ -101,6 +109,7 @@
   var els = {
     status: document.getElementById('tm-status'),
     projected: document.getElementById('tm-projected'),
+    band: document.getElementById('tm-band'),
     projectedLabel: document.getElementById('tm-projected-label'),
     record: document.getElementById('tm-record'),
     diff: document.getElementById('tm-diff'),
@@ -393,19 +402,41 @@
       els.projectedLabel.textContent = data.finished ? 'Final time — run complete' : 'Projected total time';
     }
 
-    // Race vs the record: negative delta = on pace to beat it
+    // ± band: a share of the REMAINING time only. Final times are exact.
+    var band = null;
+    if (proj !== null && isFinite(proj) && !data.finished) {
+      band = Math.max(0, proj - el) * BAND_SHARE;
+    }
+    if (els.band) {
+      if (band !== null && band >= 60000) {
+        els.band.hidden = false;
+        els.band.textContent = '± ' + fmtDur(band, false);
+      } else {
+        els.band.hidden = true;
+      }
+    }
+
+    // Race vs the record: negative delta = on pace to beat it. When the
+    // margin to the record is smaller than the band, say so instead of
+    // pretending the projection can pick a side.
     if (els.record) els.record.textContent = fmtDur(recordMs, false);
     var diff = (proj !== null && isFinite(proj)) ? proj - recordMs : null;
+    var tooClose = diff !== null && band !== null && Math.abs(diff) <= band;
     if (els.diff) {
       els.diff.textContent = diff === null ? '—' : (diff < 0 ? '−' : '+') + fmtDur(diff, false);
     }
     if (els.diffLabel) {
       els.diffLabel.textContent = diff === null ? 'Projected vs record'
+        : tooClose ? 'Inside the ± band — too close to call'
         : diff < 0
           ? (data.finished ? 'Beat the record by' : 'Ahead of the record')
           : (data.finished ? 'Over the record by' : 'Behind the record');
     }
-    if (els.diffWrap) els.diffWrap.classList.toggle('is-ahead', diff !== null && diff < 0);
+    // Glow is earned: only ahead beyond the uncertainty band lights up
+    if (els.diffWrap) {
+      els.diffWrap.classList.toggle('is-ahead',
+        diff !== null && diff < 0 && (data.finished || !tooClose));
+    }
     if (els.bar) els.bar.style.width = pct.toFixed(2) + '%';
     if (els.pct) els.pct.textContent = pct.toFixed(1) + '% of route';
     if (els.barWrap) {

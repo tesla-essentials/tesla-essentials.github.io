@@ -131,6 +131,14 @@ to beat" (the fastest zero-intervention FSD Cannonball — 49:55:57 by @BLKMDL3,
 May 2026); the board shows the projected ± delta vs that record, going gold
 only when ahead (glow is earned).
 
+The projection carries an honesty band (`#tm-band`): ± `BAND_SHARE` (10%) of
+the **remaining** time only — the hours already driven are fact, so the band
+tightens to zero at the finish and is hidden entirely for final times. When
+the margin to the record is smaller than the band, the delta label says
+"too close to call" instead of picking a side, and the ahead-glow is only
+earned when the projection clears the band. Heuristic, not statistics — it
+exists so the hero number doesn't overstate its own precision.
+
 The fsddb internals were verified against the real site (July 2026). It's a
 Rails app — no `__NEXT_DATA__`, no `/api/…` routes. The tracker page embeds a
 complete `let snapshot = {…}` JSON blob and polls
