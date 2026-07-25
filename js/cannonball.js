@@ -53,18 +53,26 @@
   // race.time_to_beat_seconds reports it. Overridden by the live feed.
   var recordMs = 179757 * 1000;
 
-  // Last verified live state (probed 2026-07-25 06:12 UTC): David Moss,
-  // Owen Sparks and Spencer, NYC Red Ball Garage → Portofino Inn Redondo
-  // Beach, run in progress. Shown only if every live source fails, and
-  // labeled as a snapshot when it is (a snapshot never ticks).
+  // Last verified live state (probed 2026-07-25 12:43 UTC, near Florence
+  // OH): David Moss, Owen Sparks and Spencer, NYC Red Ball Garage →
+  // Portofino Inn Redondo Beach, run in progress. Shown only if every
+  // live source fails, and labeled as a snapshot when it is (a snapshot
+  // never ticks).
   var FALLBACK = {
-    miles: 78,
+    miles: 509,
     totalMiles: 2850,
     manualMiles: 0,
     startTime: Date.parse('2026-07-24T21:38:02-07:00'),
-    elapsedMs: Date.parse('2026-07-24T23:12:27-07:00') - Date.parse('2026-07-24T21:38:02-07:00'),
+    elapsedMs: Date.parse('2026-07-25T05:42:49-07:00') - Date.parse('2026-07-24T21:38:02-07:00'),
     finished: false
   };
+
+  // Our own relay: .github/workflows/cannonball-relay.yml copies the
+  // snapshot to the cannonball-data branch every 10 min, and raw.github
+  // serves it WITH CORS headers — unlike fsddb itself. ~10 min stale at
+  // worst, but the elapsed clock ticks locally so only the mile counter
+  // lags (~0.3% projection error at highway speed).
+  var RELAY = 'https://raw.githubusercontent.com/tesla-essentials/tesla-essentials.github.io/cannonball-data/cannonball.json';
 
   function mirror(url) {
     // allorigins caches ~5 min per URL; the throwaway param keeps 90s polls live
@@ -76,17 +84,17 @@
   }
 
   // Order matters: cheapest/cleanest first. Direct fsddb JSON fails CORS
-  // today (no ACAO headers) but costs one fast failed request; the page
-  // via allorigins is the workhorse — it embeds the full snapshot JSON.
-  // Both mirrors intermittently answer 522 when fsddb is under race-day
-  // load, which is why the chain is deep and the fallback snapshot exists.
+  // today (no ACAO headers) but costs one fast failed request; the relay
+  // is the dependable workhorse. The public CORS mirrors trail as
+  // fresher-but-flaky extras — during the July 2026 race both sat on
+  // 520/522 for hours, which is why they can't lead the chain.
   function sources() {
     return [
       { url: 'https://fsddb.com' + snapshotPath, kind: 'json' },
+      { url: RELAY + '?_=' + Date.now(), kind: 'json' },
       { url: mirror(TRACKER_PAGE), kind: 'html' },
       { url: mirror('https://fsddb.com' + snapshotPath), kind: 'json' },
-      { url: mirror2(TRACKER_PAGE), kind: 'html' },
-      { url: mirror2('https://fsddb.com' + snapshotPath), kind: 'json' }
+      { url: mirror2(TRACKER_PAGE), kind: 'html' }
     ];
   }
 
@@ -111,6 +119,7 @@
 
   var data = null;        // best data we currently have
   var isSnapshot = true;  // true until a live source succeeds
+  var attempted = false;  // true once the first source walk finished
   var fetchedAt = 0;
   var tickTimer = null;
 
@@ -406,10 +415,12 @@
 
     if (els.note) {
       var ago = fetchedAt ? Math.max(0, Math.round((Date.now() - fetchedAt) / 1000)) : null;
-      els.note.textContent = isSnapshot
-        ? 'Live feed unreachable right now — showing the last verified state. Projection = elapsed time ÷ share of route driven.'
-        : 'Pulled from fsddb.com' + (ago !== null ? ' · updated ' + ago + 's ago' : '') +
-          ' · projection = elapsed time ÷ share of route driven.';
+      els.note.textContent = !isSnapshot
+        ? 'Pulled from fsddb.com' + (ago !== null ? ' · updated ' + ago + 's ago' : '') +
+          ' · projection = elapsed time ÷ share of route driven.'
+        : attempted
+          ? 'Live feed unreachable right now — showing the last verified state. Projection = elapsed time ÷ share of route driven.'
+          : 'Connecting to the live feed — showing the last verified state meanwhile. Projection = elapsed time ÷ share of route driven.';
     }
 
     // Tick every second only while there's something moving on screen
@@ -424,12 +435,12 @@
     if (i >= list.length) return Promise.resolve(null);
     var src = list[i];
     return fetchWithTimeout(src.url).then(function (body) {
+      // A parser exception must never wedge the board in a stale state —
+      // treat it exactly like an unreachable source and walk on.
       var parsed = null;
-      if (src.kind === 'json') {
-        try { parsed = fromJsonTree(JSON.parse(body)); } catch (e) { parsed = null; }
-      } else {
-        parsed = fromHtml(body);
-      }
+      try {
+        parsed = (src.kind === 'json') ? fromJsonTree(JSON.parse(body)) : fromHtml(body);
+      } catch (e) { parsed = null; }
       return parsed || tryNext(list, i + 1);
     }, function () {
       return tryNext(list, i + 1);
@@ -438,19 +449,26 @@
 
   function refresh() {
     tryNext(sources(), 0).then(function (parsed) {
+      attempted = true;
       if (parsed) {
         data = merge(parsed);
         isSnapshot = false;
         fetchedAt = Date.now();
         setStatus(data.finished ? 'done' : 'live', data.finished ? 'Run complete' : 'Live');
-      } else if (!data) {
-        data = merge(null);
-        isSnapshot = true;
-        setStatus(data.finished ? 'done' : 'snapshot', data.finished ? 'Final result' : 'Snapshot');
       }
+      render();
+    }).catch(function () {
+      attempted = true;
       render();
     });
   }
+
+  // Paint the last verified state immediately — the source walk can take
+  // tens of seconds when the mirrors are struggling, and an empty board
+  // full of dashes reads as broken. refresh() upgrades it to live data.
+  data = merge(null);
+  setStatus(data.finished ? 'done' : 'snapshot', data.finished ? 'Final result' : 'Last verified');
+  render();
 
   refresh();
   window.setInterval(refresh, REFRESH_MS);

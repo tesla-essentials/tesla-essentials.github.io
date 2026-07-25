@@ -145,21 +145,32 @@ is no interventions counter; `manual_miles` is the honesty metric (the board's
 `race.beat_record` drive the record math, and the live value overrides the
 hardcoded record constant. fsddb serves **no CORS headers**, so cross-origin
 reads go through `api.allorigins.win` (corsproxy.io blocks production origins
-on its free tier — don't re-add it). The source chain is: direct snapshot JSON
-(only useful if fsddb ever enables CORS) → the page via allorigins (workhorse —
-parses the embedded snapshot and refreshes the `?client=` token) → the snapshot
-endpoint via allorigins → both again via api.codetabs.com (second mirror; both
-mirrors intermittently 522 when fsddb is under race-day load). Parsing prefers exact key paths, then fuzzy key
+on its free tier — don't re-add it). During the July 2026 race both public
+mirrors (allorigins, codetabs) sat on 520/522 errors for hours, so the site
+runs its own relay: `.github/workflows/cannonball-relay.yml` copies a pruned
+snapshot (~2 KB, no route polyline) to the single-commit `cannonball-data`
+branch every 10 minutes, and the browser reads it from
+raw.githubusercontent.com — which, unlike fsddb, serves CORS headers. The
+relay skips the push when the data stops changing, so it goes quiet once the
+run ends (delete the workflow + branch when the board is retired). The source
+chain is: direct snapshot JSON (only useful if fsddb ever enables CORS) → the
+relay JSON (dependable, ≤10 min stale — only the mile counter lags; the clock
+ticks client-side) → the page via allorigins (fresher when alive; also
+refreshes the `?client=` token) → the snapshot via allorigins → the page via
+codetabs. Parsing prefers exact key paths, then fuzzy key
 matching, then visible-text patterns (`"78 of 2,850 planned miles"`,
 `"Time to beat 49:55:57"`, `"Race clock 1:35:09"`).
 
-If every source fails, the board falls back to a hardcoded last-verified state
-and labels itself a snapshot — it never renders empty, and a snapshot never
-ticks (a stale clock would fabricate elapsed time). States are driven by
-`data-state` on `#telemetry`: `loading | live | snapshot | done`. While a run
-is live (known start, not finished, live feed reachable), the elapsed clock and
-projection tick every second; the tracker is re-polled every 90 s with a
-cache-buster on the mirror URL (allorigins caches ~5 min otherwise).
+The hardcoded last-verified state paints immediately on load (the source walk
+can take tens of seconds when mirrors are timing out, and a board full of
+dashes reads as broken); the first successful source upgrades it in place. If
+every source fails, the board stays on that snapshot and says so — it never
+renders empty, and a snapshot never ticks (a stale clock would fabricate
+elapsed time). States are driven by `data-state` on `#telemetry`:
+`loading | live | snapshot | done` (`loading` only exists until the script
+runs). While a run is live (known start, not finished, live feed reachable),
+the elapsed clock and projection tick every second; sources are re-polled
+every 90 s with cache-busters on the relay and mirror URLs.
 
 ## Social card (OG image)
 

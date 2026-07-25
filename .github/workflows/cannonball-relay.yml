@@ -1,0 +1,96 @@
+# FSD Cannonball data relay.
+#
+# fsddb.com serves no CORS headers and the public CORS mirrors
+# (allorigins, codetabs) proved unreliable under race-day load, so the
+# browser can't dependably read the tracker cross-origin. This workflow
+# fetches the snapshot server-side every 10 minutes and force-pushes a
+# pruned copy (~2 KB, single-commit branch) to `cannonball-data`;
+# js/cannonball.js reads it via raw.githubusercontent.com, which does
+# send Access-Control-Allow-Origin. The elapsed clock ticks client-side
+# from race.started_at, so ~10 min of staleness only affects the mile
+# counter (~0.3% projection error at highway speed).
+#
+# Self-quiescing: when the snapshot stops changing (run over), nothing
+# is pushed. Safe to delete this workflow + the cannonball-data branch
+# once the run is history.
+name: cannonball-relay
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+  push:
+    branches: ['main', 'claude/fsd-cannonball-time-calc-iyshs7']
+    paths: ['.github/workflows/cannonball-relay.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cannonball-relay
+  cancel-in-progress: false
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Fetch snapshot and publish to cannonball-data
+        shell: python3 {0}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          import json, os, re, subprocess, urllib.request
+
+          UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
+
+          def get(url, accept=None):
+              req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept': accept or '*/*'})
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  return r.read()
+
+          # The snapshot ?client= token rotates per race — always read the
+          # current one off the tracker page rather than hardcoding it.
+          page = get('https://fsddb.com/trackers/FSDCannonball').decode('utf-8', 'replace')
+          m = re.search(r'data-snapshot-url="(/trackers/[^"]+)"', page)
+          path = m.group(1) if m else '/trackers/fsdcannonball/snapshot'
+          data = json.loads(get('https://fsddb.com' + path, 'application/json'))
+          if 'error' in data and 'race' not in data:
+              print('snapshot answered an error, keeping previous data:', data)
+              raise SystemExit(0)
+
+          def prune(o):
+              if isinstance(o, dict):
+                  return {k: ([] if k == 'coordinates' else prune(v))
+                          for k, v in o.items() if k not in ('route_line', 'public_trip_paths')}
+              if isinstance(o, list):
+                  return [prune(x) for x in o]
+              return o
+          data = prune(data)
+          data.pop('server_now', None)          # changes every call; breaks change detection
+          body = json.dumps(data, sort_keys=True, separators=(',', ':')) + '\n'
+
+          # Skip the push when nothing changed (e.g. the run is over).
+          try:
+              current = get('https://raw.githubusercontent.com/%s/cannonball-data/cannonball.json' % os.environ['REPO']).decode()
+              if current == body:
+                  print('unchanged, skipping push')
+                  raise SystemExit(0)
+          except SystemExit:
+              raise
+          except Exception:
+              pass
+
+          os.makedirs('/tmp/relay', exist_ok=True)
+          os.chdir('/tmp/relay')
+          open('cannonball.json', 'w').write(body)
+          run = lambda *a: subprocess.run(a, check=True)
+          run('git', 'init', '-q', '-b', 'cannonball-data')
+          run('git', 'config', 'user.name', 'cannonball-relay')
+          run('git', 'config', 'user.email', 'actions@users.noreply.github.com')
+          run('git', 'add', 'cannonball.json')
+          run('git', 'commit', '-q', '-m', 'cannonball snapshot')
+          run('git', 'push', '-q', '--force',
+              'https://x-access-token:%s@github.com/%s.git' % (os.environ['GH_TOKEN'], os.environ['REPO']),
+              'cannonball-data')
+          print('pushed', len(body), 'bytes:', body[:200])
