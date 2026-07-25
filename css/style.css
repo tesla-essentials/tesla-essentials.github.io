@@ -985,9 +985,9 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
-/* Honesty band on the projection — quiet ash, no glow (it's a caveat,
-   not a headline). Hidden once the run is final. */
-.telemetry-card__hero-band {
+/* Confidence line under the projection — quiet ash, no glow (it's a
+   caveat, not a headline). Hidden once the run is final. */
+.telemetry-card__hero-conf {
   margin-top: 8px;
   font-family: var(--font-mono);
   font-size: 0.95rem;
@@ -996,7 +996,7 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
-.telemetry-card__hero-band[hidden] { display: none; }
+.telemetry-card__hero-conf[hidden] { display: none; }
 
 .telemetry-card__hero-label {
   margin-top: 10px;

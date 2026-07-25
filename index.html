@@ -36,7 +36,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=18">
+  <link rel="stylesheet" href="css/style.css?v=19">
 
   <!-- JSON-LD: WebSite -->
   <script type="application/ld+json">
@@ -445,8 +445,8 @@
 
         <div class="telemetry-card__hero">
           <p class="telemetry-card__hero-value" id="tm-projected">&mdash;</p>
-          <p class="telemetry-card__hero-band" id="tm-band" hidden
-             title="Pace uncertainty: ±10% of the time still to drive. The hours already driven are fact; only the remainder is an estimate, so the band tightens as the run progresses.">&mdash;</p>
+          <p class="telemetry-card__hero-conf" id="tm-conf" hidden
+             title="Confidence = 100% minus the projection's pace uncertainty (a ±10% swing on the time still to drive). The hours already driven are fact, so confidence rises as the run progresses.">&mdash;</p>
           <p class="telemetry-card__hero-label" id="tm-projected-label">Projected total time</p>
         </div>
 
@@ -572,6 +572,6 @@
   </footer>
 
   <script defer src="js/main.js?v=8"></script>
-  <script defer src="js/cannonball.js?v=5"></script>
+  <script defer src="js/cannonball.js?v=6"></script>
 </body>
 </html>

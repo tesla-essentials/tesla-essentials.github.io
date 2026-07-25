@@ -44,11 +44,13 @@
   var FETCH_TIMEOUT_MS = 9000;
 
   // Uncertainty on the projection. The hours already driven are fact;
-  // only the remaining time is an estimate, so the ± band is a share of
-  // the time still to drive: ±10% covers the pace swing between open
-  // interstate and charging-heavy stretches, and shrinks to zero at the
-  // finish line. Heuristic, not statistics — but honest about which
-  // part of the number is guesswork.
+  // only the remaining time is an estimate, and ±10% covers the pace
+  // swing between open interstate and charging-heavy stretches. Shown
+  // as a confidence percentage: 100% minus the projection's overall
+  // pace uncertainty, so it rises to 100% at the finish line. The same
+  // uncertainty window also decides when the race delta is "too close
+  // to call". Heuristic, not statistics — but honest about which part
+  // of the number is guesswork.
   var BAND_SHARE = 0.10;
 
   // Snapshot JSON path. The ?client= token rotates per race; this is the
@@ -109,7 +111,7 @@
   var els = {
     status: document.getElementById('tm-status'),
     projected: document.getElementById('tm-projected'),
-    band: document.getElementById('tm-band'),
+    conf: document.getElementById('tm-conf'),
     projectedLabel: document.getElementById('tm-projected-label'),
     record: document.getElementById('tm-record'),
     diff: document.getElementById('tm-diff'),
@@ -402,23 +404,25 @@
       els.projectedLabel.textContent = data.finished ? 'Final time — run complete' : 'Projected total time';
     }
 
-    // ± band: a share of the REMAINING time only. Final times are exact.
+    // Uncertainty window (never displayed as ±): BAND_SHARE of the
+    // REMAINING time. Drives the confidence % and the too-close call.
     var band = null;
     if (proj !== null && isFinite(proj) && !data.finished) {
       band = Math.max(0, proj - el) * BAND_SHARE;
     }
-    if (els.band) {
-      if (band !== null && band >= 60000) {
-        els.band.hidden = false;
-        els.band.textContent = '± ' + fmtDur(band, false);
+    if (els.conf) {
+      if (band !== null && proj > 0) {
+        var conf = Math.max(0, Math.min(100, Math.round(100 * (1 - band / proj))));
+        els.conf.hidden = false;
+        els.conf.textContent = conf + '% confidence';
       } else {
-        els.band.hidden = true;
+        els.conf.hidden = true;
       }
     }
 
     // Race vs the record: negative delta = on pace to beat it. When the
-    // margin to the record is smaller than the band, say so instead of
-    // pretending the projection can pick a side.
+    // margin to the record is smaller than the uncertainty window, say
+    // so instead of pretending the projection can pick a side.
     if (els.record) els.record.textContent = fmtDur(recordMs, false);
     var diff = (proj !== null && isFinite(proj)) ? proj - recordMs : null;
     var tooClose = diff !== null && band !== null && Math.abs(diff) <= band;
@@ -427,7 +431,7 @@
     }
     if (els.diffLabel) {
       els.diffLabel.textContent = diff === null ? 'Projected vs record'
-        : tooClose ? 'Inside the ± band — too close to call'
+        : tooClose ? 'Too close to call'
         : diff < 0
           ? (data.finished ? 'Beat the record by' : 'Ahead of the record')
           : (data.finished ? 'Over the record by' : 'Behind the record');
