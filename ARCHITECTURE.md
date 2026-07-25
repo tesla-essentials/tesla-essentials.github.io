@@ -125,7 +125,11 @@ Defined in `css/style.css` using CSS custom properties (`--onyx`, `--lacquer`,
 A non-commercial engagement section between the collection and the Cybertruck
 promo. `js/cannonball.js` fetches David Moss's run data from
 `fsddb.com/trackers/FSDCannonball` **client-side** and renders a projected total
-run time: `projected = elapsed ÷ (miles completed ÷ route miles)`.
+run time: `projected = elapsed ÷ (miles completed ÷ route miles)`. All durations
+render in hours only (never days) so they compare at a glance against the "time
+to beat" (`RECORD_MS` in the JS — the fastest zero-intervention FSD Cannonball,
+49h 55m, May 2026); the board shows the projected ± delta vs that record, going
+gold only when ahead (glow is earned).
 
 fsddb.com has no documented public API, so the fetcher is deliberately
 defensive: it walks a source list (guessed JSON endpoint → the page itself →

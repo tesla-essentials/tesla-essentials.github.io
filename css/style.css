@@ -994,6 +994,51 @@ button {
   color: var(--mute);
 }
 
+/* Race vs the record — time to beat + projected margin.
+   Glow is earned: the delta only goes gold when ahead of the record. */
+.telemetry-card__race {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px 64px;
+  margin-top: 30px;
+}
+
+.telemetry-race__value {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1.55rem;
+  line-height: 1;
+  color: var(--ivory);
+  font-variant-numeric: tabular-nums;
+}
+
+.telemetry-race__label {
+  margin-top: 7px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+#tm-diff-wrap .telemetry-race__value { color: var(--linen); }
+#tm-diff-wrap.is-ahead .telemetry-race__value {
+  color: var(--gold-hot);
+  text-shadow: 0 0 0.5em rgba(216, 179, 92, 0.4);
+}
+#tm-diff-wrap.is-ahead .telemetry-race__label { color: var(--gold); }
+
+.telemetry-card__race-note {
+  margin: 14px auto 0;
+  max-width: 480px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  line-height: 1.7;
+  color: var(--mute);
+}
+
 .telemetry-card .deco-rule { margin: 30px auto 26px; max-width: 320px; }
 
 .telemetry-card__stats {

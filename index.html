@@ -36,7 +36,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=16">
+  <link rel="stylesheet" href="css/style.css?v=17">
 
   <!-- JSON-LD: WebSite -->
   <script type="application/ld+json">
@@ -447,6 +447,18 @@
           <p class="telemetry-card__hero-label" id="tm-projected-label">Projected total time</p>
         </div>
 
+        <div class="telemetry-card__race">
+          <div class="telemetry-race">
+            <p class="telemetry-race__value" id="tm-record">49h 55m</p>
+            <p class="telemetry-race__label">Time to beat</p>
+          </div>
+          <div class="telemetry-race" id="tm-diff-wrap">
+            <p class="telemetry-race__value" id="tm-diff">&mdash;</p>
+            <p class="telemetry-race__label" id="tm-diff-label">Projected vs record</p>
+          </div>
+        </div>
+        <p class="telemetry-card__race-note">Time to beat = fastest zero-intervention FSD Cannonball: 2,833 mi coast to coast in 49h 55m (May 2026).</p>
+
         <div class="deco-rule" aria-hidden="true"><span class="deco-rule__diamond"></span></div>
 
         <dl class="telemetry-card__stats">
@@ -557,6 +569,6 @@
   </footer>
 
   <script defer src="js/main.js?v=8"></script>
-  <script defer src="js/cannonball.js?v=1"></script>
+  <script defer src="js/cannonball.js?v=2"></script>
 </body>
 </html>

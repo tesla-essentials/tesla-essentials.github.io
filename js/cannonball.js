@@ -23,6 +23,10 @@
   var REFRESH_MS = 90000;   // re-poll the tracker every 90s
   var FETCH_TIMEOUT_MS = 9000;
 
+  // Time to beat: fastest zero-intervention FSD Cannonball to date —
+  // 2,833 mi coast to coast in 49h 55m (May 2026). Update when broken.
+  var RECORD_MS = (49 * 3600 + 55 * 60) * 1000;
+
   // Last verified result (July 2026): David Moss, Tesla Diner LA →
   // Myrtle Beach SC on FSD, zero interventions. Shown only if every
   // live source fails, and labeled as a snapshot when it is.
@@ -48,6 +52,10 @@
     status: document.getElementById('tm-status'),
     projected: document.getElementById('tm-projected'),
     projectedLabel: document.getElementById('tm-projected-label'),
+    record: document.getElementById('tm-record'),
+    diff: document.getElementById('tm-diff'),
+    diffLabel: document.getElementById('tm-diff-label'),
+    diffWrap: document.getElementById('tm-diff-wrap'),
     miles: document.getElementById('tm-miles'),
     total: document.getElementById('tm-total'),
     elapsed: document.getElementById('tm-elapsed'),
@@ -253,17 +261,15 @@
     return v.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
   }
 
+  // Durations render in hours only — never days — so run times compare
+  // at a glance against the record ("68h 00m", not "2d 20h 00m").
   function fmtDur(ms, withSeconds) {
     if (ms === null || !isFinite(ms)) return '—';
-    var s = Math.floor(ms / 1000);
-    var d = Math.floor(s / 86400); s -= d * 86400;
+    var s = Math.floor(Math.abs(ms) / 1000);
     var h = Math.floor(s / 3600); s -= h * 3600;
     var m = Math.floor(s / 60); s -= m * 60;
-    var parts = [];
-    if (d) parts.push(d + 'd');
-    parts.push(h + 'h');
-    parts.push((m < 10 ? '0' : '') + m + 'm');
-    if (withSeconds && !d) parts.push((s < 10 ? '0' : '') + s + 's');
+    var parts = [h + 'h', (m < 10 ? '0' : '') + m + 'm'];
+    if (withSeconds) parts.push((s < 10 ? '0' : '') + s + 's');
     return parts.join(' ');
   }
 
@@ -289,6 +295,20 @@
     if (els.projectedLabel) {
       els.projectedLabel.textContent = data.finished ? 'Final time — run complete' : 'Projected total time';
     }
+
+    // Race vs the record: negative delta = on pace to beat it
+    if (els.record) els.record.textContent = fmtDur(RECORD_MS, false);
+    var diff = (proj !== null && isFinite(proj)) ? proj - RECORD_MS : null;
+    if (els.diff) {
+      els.diff.textContent = diff === null ? '—' : (diff < 0 ? '−' : '+') + fmtDur(diff, false);
+    }
+    if (els.diffLabel) {
+      els.diffLabel.textContent = diff === null ? 'Projected vs record'
+        : diff < 0
+          ? (data.finished ? 'Beat the record by' : 'Ahead of the record')
+          : (data.finished ? 'Over the record by' : 'Behind the record');
+    }
+    if (els.diffWrap) els.diffWrap.classList.toggle('is-ahead', diff !== null && diff < 0);
     if (els.bar) els.bar.style.width = pct.toFixed(2) + '%';
     if (els.pct) els.pct.textContent = pct.toFixed(1) + '% of route';
     if (els.barWrap) {
