@@ -1,5 +1,5 @@
-# TEMPORARY probe — dispatched once from a Claude Code session to inspect
-# the public fsddb.com tracker page structure (the dev sandbox has no
+# TEMPORARY probe — dispatched from a Claude Code session to inspect
+# the public fsddb.com tracker structure (the dev sandbox has no
 # general internet egress). Deleted after use.
 name: fsddb-probe
 on:
@@ -12,37 +12,67 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - name: Probe fsddb endpoints
+      - name: Probe fsddb snapshot endpoint + page structure
+        shell: python3 {0}
         run: |
-          set +e
-          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+          import json, re, urllib.request
 
-          probe () {
-            url="$1"; shift
-            echo "===================================================================="
-            echo "== PROBE: $url"
-            echo "===================================================================="
-            curl -sS -m 30 -A "$UA" -D /tmp/h.txt -o /tmp/b.txt "$@" "$url"
-            rc=$?
-            echo "-- curl exit: $rc"
-            echo "-- HEADERS:"
-            cat /tmp/h.txt
-            echo "-- BODY BYTES: $(wc -c < /tmp/b.txt)"
-            echo "-- BODY (first 120000 bytes):"
-            head -c 120000 /tmp/b.txt
-            echo ""
-            echo "-- END BODY"
-          }
+          UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
 
-          probe "https://fsddb.com/trackers/FSDCannonball"
-          probe "https://fsddb.com/trackers/FSDCannonball" -H "Origin: https://tesla-essentials.com" -H "Accept: text/html"
-          probe "https://fsddb.com/trackers/FSDCannonball.json" -H "Accept: application/json"
-          probe "https://fsddb.com/api/trackers/FSDCannonball" -H "Accept: application/json"
-          probe "https://fsddb.com/trackers"
-          if [ -f .probe-urls ]; then
-            while read -r u; do
-              [ -n "$u" ] && probe "$u" -H "Origin: https://tesla-essentials.com"
-            done < .probe-urls
-          fi
-          exit 0
+          def get(url, headers=None):
+              req = urllib.request.Request(url, headers=dict({'User-Agent': UA}, **(headers or {})))
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as r:
+                      return r.status, dict(r.headers), r.read()
+              except urllib.error.HTTPError as e:
+                  return e.code, dict(e.headers), e.read()[:2000]
+              except Exception as e:
+                  return None, {}, str(e).encode()
+
+          def trunc(o, n=6):
+              if isinstance(o, list):
+                  out = [trunc(x, n) for x in o[:n]]
+                  if len(o) > n: out.append('...(%d items total)' % len(o))
+                  return out
+              if isinstance(o, dict):
+                  return {k: trunc(v, n) for k, v in o.items()}
+              return o
+
+          ORIG = {'Origin': 'https://tesla-essentials.com', 'Accept': 'application/json'}
+
+          for label, url, hdrs in [
+              ('SNAPSHOT+ORIGIN', 'https://fsddb.com/trackers/fsdcannonball/snapshot?client=20260724-race-1', ORIG),
+              ('LIVE_LOCATION', 'https://fsddb.com/trackers/fsdcannonball/live_location', ORIG),
+              ('SNAPSHOT-via-allorigins', 'https://api.allorigins.win/raw?url=' + urllib.request.quote('https://fsddb.com/trackers/fsdcannonball/snapshot', safe=''), {'Origin': 'https://tesla-essentials.com'}),
+              ('SNAPSHOT-via-corsproxy', 'https://corsproxy.io/?url=' + urllib.request.quote('https://fsddb.com/trackers/fsdcannonball/snapshot', safe=''), {'Origin': 'https://tesla-essentials.com'}),
+          ]:
+              st, h, b = get(url, hdrs)
+              print('=' * 70)
+              print('== %s %s' % (label, url))
+              print('-- status:', st)
+              print('-- headers:', json.dumps({k.lower(): v for k, v in h.items()}))
+              try:
+                  print('-- json (lists truncated):')
+                  print(json.dumps(trunc(json.loads(b)), indent=1)[:40000])
+              except Exception:
+                  print('-- body (first 3000):', b[:3000])
+
+          # Page markup with scripts/styles/route JSON stripped, so the part
+          # of the 332KB page beyond the giant blobs is visible.
+          st, h, b = get('https://fsddb.com/trackers/FSDCannonball')
+          html = b.decode('utf-8', 'replace')
+          print('=' * 70)
+          print('== PAGE status', st, 'bytes', len(html))
+          stripped = re.sub(r'<script[\s\S]*?</script>', '[SCRIPT]', html)
+          stripped = re.sub(r'<style[\s\S]*?</style>', '[STYLE]', stripped)
+          stripped = re.sub(r'\n\s*\n+', '\n', stripped)
+          print('-- MARKUP (scripts/styles stripped):')
+          print(stripped[:60000])
+          print('-- END MARKUP')
+          # Any snapshot-adjacent script code (poll interval, ws) minus coordinates
+          for m in re.finditer(r'<script[^>]*>([\s\S]*?)</script>', html):
+              s = m.group(1)
+              if 'snapshot' in s or 'race' in s:
+                  s = re.sub(r'"coordinates":\[[^\]]*\]', '"coordinates":[...]', s)
+                  print('-- SCRIPT with snapshot/race (coords stripped), %d chars:' % len(s))
+                  print(s[:80000])
