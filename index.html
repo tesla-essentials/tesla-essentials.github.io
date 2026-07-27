@@ -36,7 +36,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=19">
+  <link rel="stylesheet" href="css/style.css?v=20">
 
   <!-- JSON-LD: WebSite -->
   <script type="application/ld+json">
@@ -423,85 +423,6 @@
     </section>
 
     <!-- ============================================================
-         FSD CANNONBALL — live telemetry from fsddb.com
-         Data is fetched client-side by js/cannonball.js; everything
-         below is the loading skeleton it fills in.
-         ============================================================ -->
-    <section id="fsd-cannonball" class="section section--feature" aria-labelledby="cannonball-heading">
-      <div class="telemetry-card" id="telemetry" data-state="loading">
-        <div class="telemetry-card__badge">
-          <span class="telemetry-card__pulse" aria-hidden="true"></span>
-          <span id="tm-status">Connecting&hellip;</span>
-        </div>
-        <p class="section__eyebrow">Live Telemetry</p>
-        <h2 id="cannonball-heading">The FSD Cannonball</h2>
-        <p class="telemetry-card__lede">
-          David Moss, Owen Sparks, and Spencer are running a Model 3 on Full Self-Driving down the classic
-          Cannonball route &mdash; NYC's Red Ball Garage to the Portofino Inn in Redondo Beach &mdash; hands off.
-          This board pulls the run data straight from the
-          <a href="https://fsddb.com/trackers/FSDCannonball" target="_blank" rel="noopener noreferrer">FSDDB tracker</a>
-          and projects the total run time from the pace so far.
-        </p>
-
-        <div class="telemetry-card__hero">
-          <p class="telemetry-card__hero-value" id="tm-projected">&mdash;</p>
-          <p class="telemetry-card__hero-conf" id="tm-conf" hidden
-             title="Confidence = 100% minus the projection's pace uncertainty (a ±10% swing on the time still to drive). The hours already driven are fact, so confidence rises as the run progresses.">&mdash;</p>
-          <p class="telemetry-card__hero-label" id="tm-projected-label">Projected total time</p>
-        </div>
-
-        <div class="telemetry-card__race">
-          <div class="telemetry-race">
-            <p class="telemetry-race__value" id="tm-record">49h 55m</p>
-            <p class="telemetry-race__label">Time to beat</p>
-          </div>
-          <div class="telemetry-race" id="tm-diff-wrap">
-            <p class="telemetry-race__value" id="tm-diff">&mdash;</p>
-            <p class="telemetry-race__label" id="tm-diff-label">Projected vs record</p>
-          </div>
-        </div>
-        <p class="telemetry-card__race-note">Time to beat = fastest zero-intervention FSD Cannonball: 2,833 mi coast to coast in 49:55:57 by @BLKMDL3 (May 2026).</p>
-
-        <div class="deco-rule" aria-hidden="true"><span class="deco-rule__diamond"></span></div>
-
-        <dl class="telemetry-card__stats">
-          <div class="telemetry-stat">
-            <dt>Miles on FSD</dt>
-            <dd id="tm-miles">&mdash;</dd>
-          </div>
-          <div class="telemetry-stat">
-            <dt>Route miles</dt>
-            <dd id="tm-total">&mdash;</dd>
-          </div>
-          <div class="telemetry-stat">
-            <dt>Elapsed</dt>
-            <dd id="tm-elapsed">&mdash;</dd>
-          </div>
-          <div class="telemetry-stat">
-            <dt>Avg mph</dt>
-            <dd id="tm-speed">&mdash;</dd>
-          </div>
-          <div class="telemetry-stat">
-            <dt>Manual miles</dt>
-            <dd id="tm-manual">&mdash;</dd>
-          </div>
-        </dl>
-
-        <div class="telemetry-bar" id="tm-bar-wrap" role="progressbar" aria-label="Route progress"
-             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-          <div class="telemetry-bar__fill" id="tm-bar"><span class="telemetry-bar__diamond" aria-hidden="true"></span></div>
-        </div>
-        <p class="telemetry-card__pct" id="tm-pct">&mdash;</p>
-
-        <p class="telemetry-card__meta" id="tm-note" aria-live="polite">Reaching the FSDDB tracker&hellip;</p>
-
-        <a class="cta-button cta-button--gold" href="https://fsddb.com/trackers/FSDCannonball" target="_blank" rel="noopener noreferrer">
-          Follow the run on FSDDB
-        </a>
-      </div>
-    </section>
-
-    <!-- ============================================================
          #cybertruck — cross-promo to sister site
          ============================================================ -->
     <section id="cybertruck-promo" class="section section--feature" aria-labelledby="cybertruck-heading">
@@ -572,6 +493,5 @@
   </footer>
 
   <script defer src="js/main.js?v=8"></script>
-  <script defer src="js/cannonball.js?v=8"></script>
 </body>
 </html>

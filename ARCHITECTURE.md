@@ -23,7 +23,6 @@ JetBrains Mono (labels, eyebrows, chips).
 ├── index.html                 # The main experience (single filterable grid)
 ├── css/style.css              # "Marquee" design system
 ├── js/main.js                 # Vanilla JS: filter engine, reveals, toolbar
-├── js/cannonball.js           # FSD Cannonball live-telemetry board (fsddb.com)
 ├── images/
 │   ├── hero/                  # (og:image only — hero is now pure graphic)
 │   └── products/<slug>/       # Product photos (kept reasonably optimized)
@@ -119,83 +118,6 @@ Defined in `css/style.css` using CSS custom properties (`--onyx`, `--lacquer`,
 - Champagne gold = structure/signage/active states; red = CTA action only
 - `prefers-reduced-motion` disables reveals, hover transforms, and glow pulses
 - Focus: gold `:focus-visible` outlines everywhere; CTA uses a layered ring
-
-### FSD Cannonball telemetry board (`#fsd-cannonball`)
-
-A non-commercial engagement section between the collection and the Cybertruck
-promo. `js/cannonball.js` fetches the FSD Cannonball record-attempt data from
-`fsddb.com/trackers/FSDCannonball` **client-side** and renders a projected total
-run time: `projected = elapsed ÷ (miles completed ÷ route miles)`, where
-**`elapsed` is the clock reading at the instant fsddb recorded those miles**
-(`counter_updated_at`), not the live clock — pairing stale miles with a live
-clock silently inflates the projection by `route ÷ miles` hours for every hour
-of staleness (at 874 of 2,850 miles that was 3.3 h per hour, marching the board
-toward "behind the record" and snapping back on each update). The race clock
-and the "Elapsed" stat still tick live; only the pace ratio, avg mph and
-confidence window use the paired reading, and the footnote states how old the
-mile counters are. All durations
-render in hours only (never days) so they compare at a glance against the "time
-to beat" (the fastest zero-intervention FSD Cannonball — 49:55:57 by @BLKMDL3,
-May 2026); the board shows the projected ± delta vs that record, going gold
-only when ahead (glow is earned).
-
-The projection carries a confidence percentage (`#tm-conf`): the uncertainty
-window is `BAND_SHARE` (10%) of the **remaining** time only — the hours
-already driven are fact — and confidence = 100% − (window ÷ projected total),
-so it rises toward 100% as the run progresses and is hidden for final times.
-The same window disciplines the record delta: when the margin to the record
-is smaller than it, the label says "Too close to call" instead of picking a
-side, and the ahead-glow is only earned when the projection clears the
-window. Heuristic, not statistics — it exists so the hero number doesn't
-overstate its own precision.
-
-The fsddb internals were verified against the real site (July 2026). It's a
-Rails app — no `__NEXT_DATA__`, no `/api/…` routes. The tracker page embeds a
-complete `let snapshot = {…}` JSON blob and polls
-`/trackers/fsdcannonball/snapshot?client=<token>` (the token rotates per race
-and lives in the page's `data-snapshot-url`; without it the endpoint answers
-`{"error": "This tracker page is stale…"}`). Field semantics that matter:
-`public_route.planned_total_miles` is the route length and
-`public_route.progress_miles` the miles completed — `total_miles` /
-`self_driving_miles` are miles *driven so far*, never the route length. There
-is no interventions counter; `manual_miles` is the honesty metric (the board's
-"Manual miles" stat). `race.time_to_beat_seconds` / `race.final_seconds` /
-`race.beat_record` drive the record math, and the live value overrides the
-hardcoded record constant. fsddb serves **no CORS headers**, so cross-origin
-reads go through `api.allorigins.win` (corsproxy.io blocks production origins
-on its free tier — don't re-add it). During the July 2026 race both public
-mirrors (allorigins, codetabs) sat on 520/522 errors for hours, so the site
-runs its own relay: `.github/workflows/cannonball-relay.yml` fires on a 5-min
-cron and each run *loops for ~55 minutes*, polling fsddb every ~45 s and
-force-pushing a pruned snapshot (~2 KB — no route polyline, no live_location)
-to the single-commit `cannonball-data` branch whenever the counters actually
-change; the browser reads it from raw.githubusercontent.com — which, unlike
-fsddb, serves CORS headers. **Never shorten that loop to rely on cron
-cadence**: GitHub throttles scheduled workflows on public repos, and a `*/5`
-cron was observed firing only about once an hour, so 4.5-minute runs left
-55-minute holes with no polling at all. A ~55-minute loop means one firing per
-hour still gives continuous coverage. Note
-fsddb intentionally delays public *location* data by 15 min
-(`location_delay_minutes`) — the mile counters the board uses are
-near-real-time. The relay skips pushes when nothing changed, so it goes
-quiet once the run ends (delete the workflow + branch when the board is
-retired). The source chain is: direct snapshot JSON (only useful if fsddb
-ever enables CORS) → the relay JSON → the page via allorigins (also
-refreshes the `?client=` token) → the snapshot via allorigins → the page via
-codetabs. Parsing prefers exact key paths, then fuzzy key
-matching, then visible-text patterns (`"78 of 2,850 planned miles"`,
-`"Time to beat 49:55:57"`, `"Race clock 1:35:09"`).
-
-The hardcoded last-verified state paints immediately on load (the source walk
-can take tens of seconds when mirrors are timing out, and a board full of
-dashes reads as broken); the first successful source upgrades it in place. If
-every source fails, the board stays on that snapshot and says so — it never
-renders empty, and a snapshot never ticks (a stale clock would fabricate
-elapsed time). States are driven by `data-state` on `#telemetry`:
-`loading | live | snapshot | done` (`loading` only exists until the script
-runs). While a run is live (known start, not finished, live feed reachable),
-the elapsed clock and projection tick every second; sources are re-polled
-every 90 s with cache-busters on the relay and mirror URLs.
 
 ## Social card (OG image)
 
